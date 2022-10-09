@@ -1,9 +1,9 @@
 # Spotify Wheel - Team Epsilon   
 
 ## Team Overview
-Karlos Boehlke - karlosdb
-Shubhranshu Mishra- shubym
-Kevin Nguyen- ktnguy20
+Karlos Boehlke - karlosdb  
+Shubhranshu Mishra- shubym  
+Kevin Nguyen- ktnguy20 
 
 ## Innovative Idea:
 Our idea is to create a website called Spotify Wheel that’s main purpose is to allow users to log in with their Spotify account and manage their playlists by easily finding new music from new playlists, moving songs between playlists, removing songs from playlists, and connect with other users by being able to comment on songs and have friends in the application – which will notify the user when their friend makes a comment on a song. There will also be a bookmark feature to help users remember where they were last listening to if they got sidetracked listening to a particular playlist.
