@@ -1,10 +1,4 @@
-# Outline   
-
-## Team Name
-Epsilon
-
-## Application Name
-Spotify Wheel
+# Spotify Wheel - Team Epsilon   
 
 ## Team Overview
 Karlos Boehlke - karlosdb
