@@ -25,4 +25,6 @@ their own comments about a song and upvote others to share their opinions.
 
 Shuby - I was responsible for drawing up the wireframes for each of the pages on the website and also was responsible for creating the login page.
 
+Kevin - I was responsible for completing the Dashboard
+
 
