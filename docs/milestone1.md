@@ -2,11 +2,15 @@
 
 ## Login Page
 ![Login Wireframe](assets/login_wf.jpeg "Login Wireframe")
+![Login HTML](assets/login.png "Login HTML")
+
 
 Above we have our login page for our application that mimics the spotify color theme.
 
 ## Main Dashboard
 ![Main Dashboard WireFrame](assets/main_wf.jpeg "Main Dashboard Wireframe")
+![Dashboard HTML](assets/dashboard.png "Dashboard HTML")
+
 
 The main purpose of our application is to make building and interacting with spotify playlists easier. The work-flow we present is while the user listens to music they can select a playlist to activley be editing. With the songs the user listens to they have three options to
 manipulate this active playlist (add, remove, move-to). 
@@ -17,11 +21,14 @@ the user can select which action they want to take manipulate the playlist. Ther
 
 ## Comments Page
 ![Comments Page Wireframe](assets/comments_wf.jpeg "Comments Wireframe")
+![Comments HTML](assets/comments.png "Comments HTML")
 
 The comments page displays information about the song in addition to comments made by other users. The user has the ability to leave 
 their own comments about a song and upvote others to share their opinions.
 
 # Division of Labor
+
+We did a group discussion for the flow and the design of the whole website. We all helped each other! :) <3
 
 Shuby - I was responsible for drawing up the wireframes for each of the pages on the website and also was responsible for creating the login page.
 
