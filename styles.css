@@ -152,3 +152,63 @@ ion-icon {
   cursor: pointer; 
   font-size: 64px !important;
 }
+
+.comment-body {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.song-info {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+}
+
+.comments {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  justify-content: center;
+  color: white;
+}
+
+.album-wrapper {
+  position: relative;
+  width: 40%;
+  padding-bottom: 40%;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.album-cover {
+ position: absolute;
+ width: 100%;
+ height: 100%;
+ left: 0;
+}
+
+.comment-item {
+  display: flex;
+  width: 80%;
+  flex-direction: row;
+  cursor: default !important;
+}
+
+.comment-input-wrapper {
+  width: 80%;
+  margin-top: 20px;
+}
+
+.submit-comment {
+  margin-top: 5px;
+}
+
+.follow {
+  cursor: pointer;
+  padding-right: 5px;
+}
