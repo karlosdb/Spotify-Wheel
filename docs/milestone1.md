@@ -27,4 +27,5 @@ Shuby - I was responsible for drawing up the wireframes for each of the pages on
 
 Kevin - I was responsible for completing the Dashboard
 
+Karlos - I was responsible for making the comments page
 
