@@ -1,18 +1,14 @@
 body {
   font-family: "Poppins", sans-serif;
   height: 100vh;
-  background: rgb(25, 20, 20);
-  background: linear-gradient(
-    180deg,
-    rgba(25, 20, 20, 0.927608543417367) 21%,
-    rgba(31, 212, 95, 1) 100%
-  );
+  background: rgb(25,20,20);
+  background: linear-gradient(180deg, rgba(25,20,20,0.927608543417367) 21%, rgba(31,212,95,1) 100%);
 }
 
 .wrapper {
   display: flex;
   align-items: center;
-  flex-direction: column;
+  flex-direction: column; 
   justify-content: center;
   width: 100%;
   min-height: 100%;
@@ -30,14 +26,21 @@ body {
   width: 90%;
   max-width: 450px;
   position: relative;
-  box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
   text-align: center;
+}
+
+#formFooter {
+  background-color: #f6f6f6;
+  border-top: 1px solid #dce8f1;
+  text-align: center;
+  border-radius: 0 0 10px 10px;
 }
 
 input {
   border: none;
   border-radius: 10px;
-  background: rgb(25, 20, 20);
+  background: rgb(25,20,20);
   color: white;
   padding: 15px 80px;
   text-align: center;
@@ -46,7 +49,7 @@ input {
   margin: 20px 20px 0px 20px !important;
 }
 
-input[type="text"] {
+input[type=text] {
   background-color: #f6f6f6;
   border: none;
   color: #0d0d0d;
@@ -61,6 +64,91 @@ input[type="text"] {
   border-radius: 5px 5px 5px 5px;
 }
 
-input[type="text"]:placeholder {
+input[type=text]:placeholder {
   color: #cccccc;
+}
+
+
+.columns {
+  color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  height: 90%;
+}
+
+.playlists {
+  width: 25%;
+  height: 100%;
+  border: 2px solid black;
+}
+
+.selected-playlist {
+  width: 50%;
+  height: 100%;
+  border: 2px solid black;
+}
+
+.actions {
+  width: 25%;
+  height: 100%;
+  border: 2px solid black;
+}
+
+.column-header {
+  margin-top: 50px;
+}
+
+.list-group-item {
+  color: black;
+  cursor: pointer;
+}
+
+.bottom-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 10%;
+  width: 100%;
+  border: 2px solid black;
+}
+
+.current-song {
+  display: flex;
+  width: 20%;
+  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 20px;
+}
+
+.comment-button {
+  width: 100px;
+}
+
+.player-controls {
+  margin-right: 10em;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.current-playlist {
+  display: flex;
+  padding-right: 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+}
+
+ion-icon {
+  cursor: pointer; 
+  font-size: 64px !important;
 }
