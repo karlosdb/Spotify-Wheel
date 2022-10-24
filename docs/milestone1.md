@@ -1,7 +1,4 @@
-
-
-# Spotify Wheel UI 
-
+# Spotify Wheel UI - Wireframes and HTML
 
 
 ## Login Page
@@ -24,3 +21,7 @@ the user can select which action they want to take manipulate the playlist. Ther
 
 
 ## Comments Page
+![Comments Page Wireframe](assets/ "Comments Wireframe")
+
+The comments page displays information about the song in addition to comments made by other users. The user has the ability to leave 
+their own comments about a song and upvote others. 
