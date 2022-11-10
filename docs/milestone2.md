@@ -75,7 +75,11 @@ base = /api/
 ![Image One](assets/1.png "1")
 ![Image Two](assets/2.png "2")
 ![Image Three](assets/3.png "3")
-![Image Four](assets/4.png "4")
+
+
+## Note image three contains both
+
+
 
 
 # URL
