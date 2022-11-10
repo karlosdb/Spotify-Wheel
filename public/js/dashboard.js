@@ -2,6 +2,7 @@ document.getElementById('comment-button').addEventListener('click', () => {
     window.location.href = '/comments'
 })
 
+
 const playlistsDiv = document.getElementById('user-playlists')
 
 let currentUrl = window.location.href
@@ -16,6 +17,25 @@ currentUrl = arr.join('/')
 console.log(currentUrl)
 
 loadPlaylists()
+
+document.getElementById('add-button').addEventListener('click', async () => {
+    const response = await fetch(`${currentUrl}/api/add_song`);
+    const data = await response.json();
+    console.log(data);
+})
+
+document.getElementById('move-button').addEventListener('click', async () => {
+    const response = await fetch(`${currentUrl}/api/move_song`);
+    const data = await response.json();
+    console.log(data);
+})
+
+document.getElementById('delete-button').addEventListener('click', async () => {
+    const response = await fetch(`${currentUrl}/api/remove_song`);
+    const data = await response.json();
+    console.log(data);
+})
+
 
 async function loadPlaylists() {
     const response = await fetch(currentUrl + '/api/playlists')

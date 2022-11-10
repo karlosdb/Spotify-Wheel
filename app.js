@@ -33,7 +33,7 @@ app.get('/api/remove_song', (req, res) => {
 })
 
 app.get('/api/move_song', (req, res) => {
-  res.json('moved song');
+  res.json('updated song');
 })
 
 app.get('/api/current_song', (req, res) => {
