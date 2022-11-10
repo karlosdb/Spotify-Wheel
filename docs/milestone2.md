@@ -72,9 +72,9 @@ base = /api/
 
 
 # Set of Screenshots
-![Image One](assets/1.png "1")
-![Image Two](assets/2.png "2")
-![Image Three](assets/3.png "3")
+![Read Image](assets/1.png "1")
+![Create Image](assets/2.png "2")
+![Update and Delte Image](assets/3.png "3")
 
 
 ## Note image three contains both
