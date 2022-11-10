@@ -39,6 +39,14 @@ base = /api/
         - response:
             status_code 200 is response is ok
 
+- Delete Comment
+    - /api/delete_comment
+    - parameters:
+        user_id: user id
+        song: which song comment is associated with
+    - response:
+        status 200 is ok
+        otherwise bad
 
 ## Get-Requests
 - Get Current song
@@ -55,7 +63,12 @@ base = /api/
     - response:
         - list of playlists user has edit access over
 
-
+- Get Comments
+    - /api/comments/ 
+    - parameters:
+        - song: which songs comments are we requesting
+    - response:
+        - list of comments associated with this song
 
 
 
