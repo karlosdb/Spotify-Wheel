@@ -30,10 +30,10 @@ app.use(function(err, req, res, next) {
 });
 
 app.get('/', function(req, res, next) {
-  res.sendFile('html/index.html');
+  res.sendFile('/public/html/index.html');
 });
 app.get('/styles.css', function(req, res, next) {
-  res.sendFile('stylesheets/styles.css');
+  res.sendFile('/public/stylesheets/styles.css');
 });
 
 let port = process.env.PORT;
