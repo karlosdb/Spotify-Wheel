@@ -50,6 +50,7 @@ async function loadPlaylists() {
         element.addEventListener('click', async () => {
             const response = await fetch(`${currentUrl}/api/get_songs/${playlists[i]}`);
             const songs = await response.json();
+            document.getElementById('current-playlist').innerHTML = playlists[i];
             renderSongs(songs);
         })
         playlistsDiv.appendChild(element)
