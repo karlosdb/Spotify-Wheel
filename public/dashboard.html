@@ -6,7 +6,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <script type="module" src="main.js" defer></script>
+    <script type="module" src="js/dashboard.js" defer></script>
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
@@ -20,23 +20,13 @@
         Playlists
       </h2>
       <ul id='user-playlists' class="list-group">
-        <li class="list-group-item">Playlist 1</li>
-        <li class="list-group-item">Playlist 2</li>
-        <li class="list-group-item">Playlist 3</li>
-        <li class="list-group-item">Playlist 4</li>
-        <li class="list-group-item">Playlist 5</li>
       </ul>
     </div>
     <div class = "selected-playlist">
       <h2 class = "column-header">
         Songs in Playlist
       </h2>
-      <ul class="list-group">
-        <li class="list-group-item">Song 1</li>
-        <li class="list-group-item">Song 2</li>
-        <li class="list-group-item">Song 3</li>
-        <li class="list-group-item">Song 4</li>
-        <li class="list-group-item">Song 5</li>
+      <ul id='playlist-songs' class="list-group">
       </ul>
     </div>
     <div class = "actions">
@@ -55,7 +45,7 @@
       <a> Song Name </a>
       <a> Artist </a>
       <div class="buttons">
-        <button class = "comment-button"> Comments </button>
+        <button id = "comment-button" class = "comment-button"> Comments </button>
         <button class = "comment-button"> Notification </button>
         <button class = "comment-button"> Logout </button>
       </div>
