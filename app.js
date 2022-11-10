@@ -23,7 +23,15 @@ app.use(function(err, req, res, next) {
 });
 
 app.get('/', function(req, res, next) {
-  res.sendFile(path.join(__dirname, 'public/html/index.html'));
+  res.sendFile(path.join(__dirname, 'public/index.html'));
+});
+
+app.get('/dashboard', function(req, res, next) {
+  res.sendFile(path.join(__dirname, 'public/dashboard.html'));
+});
+
+app.get('/comments', function(req, res, next) {
+  res.sendFile(path.join(__dirname, 'public/comments.html'));
 });
 
 let port = process.env.PORT;
