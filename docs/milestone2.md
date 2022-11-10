@@ -1,12 +1,10 @@
-
-
 # API Documentation
 
 base = /api/
 
 # Endpoints
 
-# Post-Requests
+## Post-Requests
 - Save Comment
     /api/save_comment
     parameters:
@@ -42,8 +40,7 @@ base = /api/
             status_code 200 is response is ok
 
 
-# Get-Requests
-
+## Get-Requests
 - Get Current song
     /api/current_song/ 
     parameters:
@@ -56,7 +53,7 @@ base = /api/
     parameters:
         token: spotify oauth token
     response:
-        {}
+        list of playlists user has edit access over
 
 
 
