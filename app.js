@@ -15,6 +15,7 @@ if (!process.env.PASSWORD) {
   password = secrets.password;
 } else {
 	password = process.env.PASSWORD;
+  username = process.env.USERNAME;
 }
 
 const uri = `mongodb+srv://${username}:${password}@cluster0.ske5cyo.mongodb.net/?retryWrites=true&w=majority`
