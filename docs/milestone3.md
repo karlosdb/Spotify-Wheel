@@ -3,7 +3,7 @@
 ## Structure of Database
 
 ### Users
-- {username: string, liked_songs: List of document ID's for songs, comments: list of comment id's associated with this user]}
+- {username: string, liked_songs: List of document ID's for songs, comments: list of comment id's associated with this user}
 
 ### Songs
 - {name: string, commments: List of document ID's for comment}
