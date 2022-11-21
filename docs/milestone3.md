@@ -1,5 +1,3 @@
-
-
 # MongoDB Database
 
 ## Structure of Database
