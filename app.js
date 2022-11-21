@@ -12,7 +12,7 @@ if (!process.env.URI) {
   secrets = require('./secrets.json');
   uri = secrets.uri
 } else {
-	password = process.env.URI;
+	uri = process.env.URI;
 }
 
 const client = new MongoClient(uri);
