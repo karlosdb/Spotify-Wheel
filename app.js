@@ -7,20 +7,15 @@ var app = express();
 const {MongoClient} = require('mongodb');
 
 let secrets;
-let password;
-let username;
-if (!process.env.PASSWORD) {
+let uri;
+if (!process.env.URI) {
   secrets = require('./secrets.json');
-  username = secrets.username
-  password = secrets.password;
+  uri = secrets.uri
 } else {
-	password = process.env.PASSWORD;
-  username = process.env.USERNAME;
+	password = process.env.URI;
 }
 
-const uri = `mongodb+srv://${username}:${password}@cluster0.ske5cyo.mongodb.net/?retryWrites=true&w=majority`
-
-const client = new MongoClient(uri)
+const client = new MongoClient(uri);
 
 
 app.use(express.static(path.join(__dirname, 'public')));
