@@ -77,8 +77,9 @@ if (port == null || port == "") {
   port = 8000;
 }
 
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`Spotify Wheel listening on port ${port}`)
+  await client.connect();
 });
 
 module.exports = app;
