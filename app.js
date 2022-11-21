@@ -10,7 +10,7 @@ let secrets;
 let password;
 let username;
 if (!process.env.PASSWORD) {
-  secrets = require('secrets.json');
+  secrets = require('./secrets.json');
   username = secrets.username
   password = secrets.password;
 } else {
@@ -79,7 +79,12 @@ if (port == null || port == "") {
 
 app.listen(port, async () => {
   console.log(`Spotify Wheel listening on port ${port}`)
-  await client.connect();
+
+  try {
+    await client.connect();
+  } catch (e) {
+    console.log(e)
+  }
 });
 
 module.exports = app;
