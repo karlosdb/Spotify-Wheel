@@ -40,10 +40,6 @@ app.get('/api/save_comment', (req, res) => {
 })
 
 app.get('/api/add_song', async (req, res) => {
-  client.connect(err => {
-    const collection = client.db("db").collection("users");
-    collection.insertOne({user: "Kevin", pass:"pass"}, () => client.close());
-  });
   res.json('added song');
 })
 
@@ -79,11 +75,29 @@ app.get('/api/current_song', (req, res) => {
 })
 
 app.get('/api/playlists', (req, res) => {
-  res.json(data.playlists);
+  // res.json(data.playlists);
+  client.connect(err => {
+    let playlists = [];
+    const collection = client.db("db").collection("songs");
+    collection.find({}).toArray(function(err, result) {
+      if (err) throw err;
+      res.json(result.map((x) => {
+        return Object.keys(x)[1];
+      }));
+      
+    });
+  });
 })
 
 app.get('/api/get_songs/:playlist/', (req, res) => {
   const playlist = req.params.playlist;
+  // client.connect(err => {
+  //   const collection = client.db("db").collection("songs");
+  //   collection.find({playlist}).toArray(function(err, result) {
+  //     if (err) throw err;
+  //     res.json(result);
+  //   });
+  // });
   res.json(data.songs[playlist]);
 })
 
