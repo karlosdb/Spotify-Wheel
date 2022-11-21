@@ -42,7 +42,6 @@ app.get('/api/save_comment', (req, res) => {
 app.get('/api/add_song', async (req, res) => {
   client.connect(err => {
     const collection = client.db("db").collection("users");
-    // perform actions on the collection object
     collection.insertOne({user: "Kevin", pass:"pass"}, () => client.close());
   });
   res.json('added song');
@@ -51,18 +50,32 @@ app.get('/api/add_song', async (req, res) => {
 app.get('/api/remove_song', (req, res) => {
   client.connect(err => {
     const collection = client.db("db").collection("users");
-    // perform actions on the collection object
     collection.deleteMany({}, () => client.close());
   });
   res.json('removed song');
 })
 
 app.get('/api/move_song', (req, res) => {
+  client.connect(err => {
+    const collection = client.db("db").collection("users");
+    collection.updateOne(
+      {user: "Kevin"},
+      {
+        $set: { "logins" : 3 }
+      }
+    )
+  });
   res.json('updated song');
-})
+});
 
 app.get('/api/current_song', (req, res) => {
-  res.json(data.current_song);
+  client.connect(err => {
+    const collection = client.db("db").collection("users");
+    collection.find({}).toArray(function(err, result) {
+      if (err) throw err;
+      res.json(result);
+    });
+  });
 })
 
 app.get('/api/playlists', (req, res) => {
