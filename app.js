@@ -1,10 +1,10 @@
 const data = require('./data')
-
 var express = require('express');
 var path = require('path');
 var app = express();
 
-const {MongoClient} = require('mongodb');
+const { MongoClient, ServerApiVersion } = require('mongodb');
+require('dotenv').config();
 
 let secrets;
 let uri;
@@ -15,7 +15,8 @@ if (!process.env.URI) {
 	uri = process.env.URI;
 }
 
-const client = new MongoClient(uri);
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
 
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -38,11 +39,21 @@ app.get('/api/save_comment', (req, res) => {
   res.json('saved comment');
 })
 
-app.get('/api/add_song', (req, res) => {
+app.get('/api/add_song', async (req, res) => {
+  client.connect(err => {
+    const collection = client.db("db").collection("users");
+    // perform actions on the collection object
+    collection.insertOne({user: "Kevin", pass:"pass"}, () => client.close());
+  });
   res.json('added song');
 })
 
 app.get('/api/remove_song', (req, res) => {
+  client.connect(err => {
+    const collection = client.db("db").collection("users");
+    // perform actions on the collection object
+    collection.deleteMany({}, () => client.close());
+  });
   res.json('removed song');
 })
 
@@ -75,12 +86,6 @@ if (port == null || port == "") {
 
 app.listen(port, async () => {
   console.log(`Spotify Wheel listening on port ${port}`)
-
-  try {
-    await client.connect();
-  } catch (e) {
-    console.log(e)
-  }
 });
 
 module.exports = app;
