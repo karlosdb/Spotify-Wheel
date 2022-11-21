@@ -13,5 +13,5 @@
 
 ## Division of Labor
 Karlos: Created database and connection configuration code with environment variable
-Kevin:
+Kevin: Created basic database connection routes for the future implementation
 Shubhranshu: Worked on figuring out schema for each of the 
