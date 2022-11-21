@@ -91,14 +91,12 @@ app.get('/api/playlists', (req, res) => {
 
 app.get('/api/get_songs/:playlist/', (req, res) => {
   const playlist = req.params.playlist;
-  // client.connect(err => {
-  //   const collection = client.db("db").collection("songs");
-  //   collection.find({playlist}).toArray(function(err, result) {
-  //     if (err) throw err;
-  //     res.json(result);
-  //   });
-  // });
-  res.json(data.songs[playlist]);
+  client.connect(err => {
+    const collection = client.db("db").collection("songs");
+    collection.find({ [playlist] : { $exists : true } }).toArray(function(err, result) {
+      res.json(Object.values(result[0])[1]);
+    });
+  });
 })
 
 app.get('/login=&login=', (req, res) => {
