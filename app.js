@@ -4,6 +4,19 @@ const express = require("express");
 const path = require("path");
 const app = express();
 
+// *** HELLA NICE HELPER FUNCTION ***
+const getMethods = (obj) => {
+  let properties = new Set();
+  let currentObj = obj;
+  do {
+    Object.getOwnPropertyNames(currentObj).map((item) => properties.add(item));
+  } while ((currentObj = Object.getPrototypeOf(currentObj)));
+  return [...properties.keys()].filter(
+    (item) => typeof obj[item] === "function"
+  );
+};
+
+
 require("dotenv").config();
 
 let secrets;
@@ -18,19 +31,31 @@ if (!process.env.URI) {
 
 
 
-// *** HELLA NICE HELPER FUNCTION ***
-const getMethods = (obj) => {
-  let properties = new Set();
-  let currentObj = obj;
-  do {
-    Object.getOwnPropertyNames(currentObj).map((item) => properties.add(item));
-  } while ((currentObj = Object.getPrototypeOf(currentObj)));
-  return [...properties.keys()].filter(
-    (item) => typeof obj[item] === "function"
-  );
-};
+// *** PASSPORT ***
+const passport = require("passport");
+const session = require("express-session");
+
+
+// how we authenticate users
+const LocalStrategy = require('passport-local').Strategy; 
+
+
+
+app.use(session({
+  secret: process.env.SECRET || 'SECRET',
+  resave: false,
+  saveUninitialized: false,
+}))
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.urlencoded({'extended' : true})); // allow URLencoded data
+app.use(express.json());
+
+
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const client = new MongoClient(uri, {
@@ -41,6 +66,23 @@ const client = new MongoClient(uri, {
 
 client.connect().then((db) => {
   db = db.db("db");
+
+
+  // *** PASSPORT ***
+
+  const strategy = new LocalStrategy(
+    async (username, password, done) => {
+      const users = db.collection("users");
+
+      const found = await users.findOne({ username: username });
+
+      if (!found) {
+        await new Promise((r) => setTimeout(r, 2000)); // two second delay
+        return done(null, false, { message: "Wrong username" });
+      } 
+    }
+  );
+
   // *** SPOTIFY ***
   app.get("/accessToken", (req, res) => {
     res.json(sp.accessToken);
@@ -110,11 +152,8 @@ client.connect().then((db) => {
 
   // *** API CALLS ***
   app.get("/api/save_comment", (req, res) => {
-    db.collection("users")
-      .insertOne({ test: "test" })
-      .then((_) => {
-        res.json("saved comment");
-      })
+    db.collection("users").insertOne({ test: "test" })
+      .then((_) => res.json("saved comment"))
       .catch(console.err);
   });
 
@@ -148,4 +187,7 @@ client.connect().then((db) => {
   });
 
 });
+
+
+
 module.exports = app;
