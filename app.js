@@ -1,8 +1,11 @@
-const data = require("./data");
-const sp = require("./spotify");
-const express = require("express");
-const path = require("path");
+const data = require('./data')
+const express = require('express');
+const path = require('path');
 const app = express();
+const SpotifyWebApi = require('spotify-web-api-node');
+
+const sp = require("./spotify");
+
 
 // *** HELLA NICE HELPER FUNCTION ***
 const getMethods = (obj) => {
@@ -88,14 +91,14 @@ client.connect().then((db) => {
     res.json(sp.accessToken);
   });
 
-  app.get("/spotifyLogin", (req, res) => {
-    res.redirect(sp.spotifyApi.createAuthorizeURL(sp.scopes));
-  });
+app.get('/spotifyLogin', (req, res) => {
+  res.redirect(spotifyApi.createAuthorizeURL(scopes));
+});
 
-  app.get("/callback", (req, res) => {
-    const error = req.query.error;
-    const code = req.query.code;
-    const state = req.query.state;
+app.get('/callback', (req, res) => {
+  const error = req.query.error;
+  const code = req.query.code;
+  const state = req.query.state;
 
     if (error) {
       console.error("Callback Error:", error);
@@ -176,6 +179,8 @@ client.connect().then((db) => {
   app.get("/login=&login=", (req, res) => {
     res.redirect("/dashboard");
   });
+
+
 
   let port = process.env.PORT;
   if (port == null || port == "") {

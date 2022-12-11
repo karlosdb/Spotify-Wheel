@@ -8,6 +8,7 @@
     <script type="module" src="js/login.js" defer></script>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
 
     <title> Login </title>
   </head>
@@ -15,11 +16,16 @@
     <div class="wrapper">
       <h1 class="login-header" > Spotify Wheel </h1>
       <div id="formContent">
-        <form>
-          <input type="text" id="Username" name="login" placeholder="Username">
-          <input type="text" id="password" name="login" placeholder="Password">
-          <input formaction="dashboard" type="submit" value="Log In">
+        <form action="dashboard" method="GET">
+          <input type="text" id="Username" placeholder="Username">
+          
+            <input type="password" autocomplete = "current-password" id="password" placeholder="Password">
+            <span>
+              <i class="bi bi-eye-slash" id="show-password"></i>
+          </span>
+          <input type="submit" id="submit-login" value="Log In">
         </form>
+
       </div>
     </div>
 
