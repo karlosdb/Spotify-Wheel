@@ -1,8 +1,9 @@
 const data = require('./data')
+const sp = require('./spotify')
 var express = require('express');
 var path = require('path');
 var app = express();
-var SpotifyWebApi = require('spotify-web-api-node');
+
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
 require('dotenv').config();
@@ -18,40 +19,14 @@ if (!process.env.URI) {
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
-// SPOTIFY SHITTTTTTTTTTTT
-const scopes = [
-  'ugc-image-upload',
-  'user-read-playback-state',
-  'user-modify-playback-state',
-  'user-read-currently-playing',
-  'streaming',
-  'app-remote-control',
-  'user-read-email',
-  'user-read-private',
-  'playlist-read-collaborative',
-  'playlist-modify-public',
-  'playlist-read-private',
-  'playlist-modify-private',
-  'user-library-modify',
-  'user-library-read',
-  'user-top-read',
-  'user-read-playback-position',
-  'user-read-recently-played',
-  'user-follow-read',
-  'user-follow-modify'
-];
-
-var spotifyApi = new SpotifyWebApi({
-  clientId: '9923775e49b54d5dad3b5b291d7790b5',
-  clientSecret: '2fd4c770741642628cdf09fc522969ea',
-  redirectUri: 'http://localhost:8000/callback'
-});
-
-
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/accessToken', (req, res) => {
+  res.json(sp.accessToken);
+});
+
 app.get('/spotifyLogin', (req, res) => {
-  res.redirect(spotifyApi.createAuthorizeURL(scopes));
+  res.redirect(sp.spotifyApi.createAuthorizeURL(sp.scopes));
 });
 
 app.get('/callback', (req, res) => {
@@ -65,15 +40,15 @@ app.get('/callback', (req, res) => {
     return;
   }
 
-  spotifyApi
+  sp.spotifyApi
     .authorizationCodeGrant(code)
     .then(data => {
       const access_token = data.body['access_token'];
       const refresh_token = data.body['refresh_token'];
       const expires_in = data.body['expires_in'];
 
-      spotifyApi.setAccessToken(access_token);
-      spotifyApi.setRefreshToken(refresh_token);
+      sp.spotifyApi.setAccessToken(access_token);
+      sp.spotifyApi.setRefreshToken(refresh_token);
 
       console.log('access_token:', access_token);
       console.log('refresh_token:', refresh_token);
@@ -81,15 +56,16 @@ app.get('/callback', (req, res) => {
       console.log(
         `Sucessfully retreived access token. Expires in ${expires_in} s.`
       );
-      res.send('Success! You can now close the window.');
+      res.redirect('/dashboard') // after loggin in, redirect back to dashboard
 
       setInterval(async () => {
-        const data = await spotifyApi.refreshAccessToken();
+        const data = await sp.spotifyApi.refreshAccessToken();
         const access_token = data.body['access_token'];
+        //sp.accessToken = access_token; // set access token in spotify.js
 
         console.log('The access token has been refreshed!');
         console.log('access_token:', access_token);
-        spotifyApi.setAccessToken(access_token);
+        sp.spotifyApi.setAccessToken(access_token);
       }, expires_in / 2 * 1000);
     })
     .catch(error => {

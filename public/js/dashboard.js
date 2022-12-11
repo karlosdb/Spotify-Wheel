@@ -16,6 +16,15 @@ currentUrl = arr.join('/')
 
 console.log(currentUrl)
 
+// const accessToken = await getAcessToken();
+
+// async function getAcessToken() {
+//     const response = await fetch(`${currentUrl}/accessToken`);
+//     const data = await response.json();
+//     return data
+// }
+
+
 loadPlaylists()
 
 document.getElementById('add-button').addEventListener('click', async () => {
@@ -38,6 +47,7 @@ document.getElementById('delete-button').addEventListener('click', async () => {
 
 
 async function loadPlaylists() {
+    console.log('IS ANY OF THIS SHIT RUNNING??????????')
     const response = await fetch(currentUrl + '/api/playlists')
     const playlists = await response.json();
 
