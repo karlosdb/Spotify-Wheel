@@ -176,10 +176,10 @@ app.get('/api/get_songs/:playlist/', (req, res) => {
   });
 })
 
-app.get('/login=&login=', (req, res) => {
-  console.log('hi')
-  res.redirect('/dashboard');
-});
+// app.get('/login=&login=', (req, res) => {
+//   console.log('hi')
+//   res.redirect('/dashboard');
+// });
 
 let port = process.env.PORT;
 if (port == null || port == "") {
