@@ -1,3 +1,14 @@
+// HOW TO IMPORT THE SPOTIFY STUFF INTO HERE? GOAL IS TO BE ABLE TO WORK WITH THE FUNCTIONS DEFINED IN SPOTIFYTEST.JS (SHOULD PROB MOVE THEM TO LIKE SPOTIFY.JS)
+// ALONG WITH THE ACCESS TOKEN GENERATED IN APP.JS, ALONG WITH SPOTIFYWEBAPI MODULE 
+// AFTER THIS IS DONE, CAN USE THIS DATA TO POPULATE THE UI
+// I tried shit like
+// import SpotifyWebApi from "../node_modules/spotify-web-api-node"; or var SpotifyWebApi = require('../../spotify-web-api-node');
+
+// const accessToken =
+//   "BQB0q4fBd2hbRuB0RcEGo_qVKB2-4uB4q0Z5dGAuayuw9NpM3LCHohD6-spQm0Z-KGSjnxER75j8ZAJaBo6ef_se30DkFLmSaiOAld-O8ZpQN1G25Bm8Czvkqwer5WvwYyYzIrZazz1rdPytWkxofrVaI8GqdmAEmXHpMuawF579AQVgywyvNl1_DZan65SJQhEfknErYhDTAhgjDULCEClgDaBRDROaNEL0Ec_oMMNZ8BHMqqaoyrBdE5b34TK6p0qNdHQPxPyV50QZHwaMzCdRoM3oRpuiU_BDm5KNXraYJ2Y6gX8RIAzJEamK6KOjTyY";
+// const spotifyApi = new SpotifyWebApi();
+
+
 document.getElementById('comment-button').addEventListener('click', () => {
     window.location.href = '/comments'
 })
