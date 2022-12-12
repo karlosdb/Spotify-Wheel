@@ -7,7 +7,9 @@ const app = express();
 const SpotifyWebApi = require('spotify-web-api-node');
 const sp = require("./spotify");
 
-const minicrypt = require('./miniCrypt');
+const minicrypt = require('./miniCrypt').MiniCrypt;
+
+
 
 require("dotenv").config();
 
@@ -71,6 +73,7 @@ app.use(express.json());
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
+
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -80,7 +83,8 @@ const client = new MongoClient(uri, {
 client.connect().then((db) => {
   db = db.db("db");
   const mc = new minicrypt();
-  // *** PASSPORT and LOGIN ***
+
+  // *** PASSPORT and LOGIN and USER CREATION ***
   const strategy = new LocalStrategy(
     async (username, password, done) => {
       const users = db.collection("users");
@@ -95,11 +99,29 @@ client.connect().then((db) => {
     }
   );
 
+  // no idea if you're suppposed to do this here
+  passport.use(strategy);
+
   app.post("/login", passport.authenticate('local', {
     successRedirect: "/dashboard",
-    failureRedirect: "/login",
+    failureRedirect: "/",
   }));
 
+  const checkAuthenticated = (req, res, next) => {
+    if (req.isAuthenticated()) { return next() }
+    res.redirect("/")
+  }
+
+  const checkLoggedIn = (req, res, next) => {
+    if (req.isAuthenticated()) return res.redirect("/dashboard");
+    next();
+  }
+
+  app.delete("/logout", (req,res) => {
+    req.logOut()
+    res.redirect("/login")
+    console.log(`-------> User Logged out`)
+ })
 
   // *** SPOTIFY ***
   app.get("/accessToken", (req, res) => {
@@ -110,6 +132,7 @@ client.connect().then((db) => {
     res.redirect(spotifyApi.createAuthorizeURL(scopes));
   });
 
+  
   app.get('/callback', (req, res) => {
     const error = req.query.error;
     const code = req.query.code;
@@ -156,15 +179,16 @@ client.connect().then((db) => {
   });
 
   // *** ROUTES ***
-  app.get("/", function (req, res, next) {
+  app.get("/", checkLoggedIn, function (req, res, next) {
     res.sendFile(path.join(__dirname, "public/login.html"));
   });
 
-  app.get("/dashboard", function (req, res, next) {
+  app.get("/dashboard", checkAuthenticated, function (req, res, next) {
     res.sendFile(path.join(__dirname, "public/dashboard.html"));
   });
 
-  app.get("/comments", function (req, res, next) {
+
+  app.get("/comments", checkAuthenticated, function (req, res, next) {
     res.sendFile(path.join(__dirname, "public/comments.html"));
   });
 
