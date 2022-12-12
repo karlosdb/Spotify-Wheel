@@ -42,11 +42,10 @@
   </div>
   <div class = "bottom-bar">
     <div class = "current-song">
-      <a> Song Name </a>
-      <a> Artist </a>
+      <a id="song-name"> Song Name </a>
+      <a id="artist-name"> Artist </a>
       <div class="buttons">
         <button id = "comment-button" class = "comment-button"> Comments </button>
-        <button class = "comment-button"> Notification </button>
         <button id="logout-button" class = "comment-button"> Logout </button>
       </div>
     </div>
@@ -54,11 +53,6 @@
       <ion-icon id="skip-back-button" name="play-skip-back-circle-outline"></ion-icon>
       <ion-icon id="play-button" name="play-circle-outline"></ion-icon>
       <ion-icon id="skip-foreward-button" name="play-skip-forward-circle-outline"></ion-icon>
-    </div>
-    <div class = "current-playlist">
-      <div class="playlist-wraper">
-        <h2 id="current-playlist"> Name of Current Playlist </h2>
-      </div>
     </div>
   </div>
   <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>

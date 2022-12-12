@@ -287,7 +287,7 @@ client.connect().then((db) => {
   })
 
   app.get("/api/get_currently_playing_track_info", async (req, res) => {
-    res.json(spotifyApi.getMyCurrentPlayingTrack().then(
+    res.json(await spotifyApi.getMyCurrentPlayingTrack().then(
       function (data) {
         if (data.body.item === undefined) {
           console.log("nothing is playing");
@@ -297,7 +297,7 @@ client.connect().then((db) => {
             name: data.body.item.name,
             artist: data.body.item.artists[0].name,
             imageURL: data.body.item.album.images[0].url,
-            id: data.body.item.id
+            uri: data.body.item.uri
           };
         }
       },
