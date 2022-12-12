@@ -258,8 +258,8 @@ client.connect().then((db) => {
   })
 
   app.post("/api/add_song", checkAuthenticated, async (req, res) => {
-    const { song_id, playlist_id } = req.body;
-    await add_song(song_id, playlist_id);
+    const [song_uri, playlist_id] = req.body;
+    await add_song(song_uri, playlist_id);
     res.send(200);
   });
 
@@ -325,7 +325,7 @@ client.connect().then((db) => {
   })
 
   app.get("/api/get_currently_playing_track_info", async (req, res) => {
-    res.json(spotifyApi.getMyCurrentPlayingTrack().then(
+    res.json(await spotifyApi.getMyCurrentPlayingTrack().then(
       function (data) {
         if (data.body.item === undefined) {
           console.log("nothing is playing");
@@ -335,7 +335,7 @@ client.connect().then((db) => {
             name: data.body.item.name,
             artist: data.body.item.artists[0].name,
             imageURL: data.body.item.album.images[0].url,
-            id: data.body.item.id
+            uri: data.body.item.uri
           };
         }
       },
