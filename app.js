@@ -232,7 +232,45 @@ client.connect().then((db) => {
     res.json(await db.collection("comments").find({ song_id }).toArray());
   });
 
-  app.get("/api/resumePlayer", async (req, res) => {
+  app.get("/api/get_playlists", checkAuthenticated, async (req, res) => {
+    const ID = (await spotifyApi.getMe()).body.id
+    spotifyApi.getUserPlaylists().then(response => response.body.items).then(playlists => {
+      res.json(playlists.filter(playlist => playlist.owner.id === ID))
+    })
+  });
+
+
+  // *** SPOTIFY HELPERS ***
+  const remove_song = async (song_id, playlist_id) => {
+    await spotifyApi.removeTracksFromPlaylist(playlist_id, [{ uri: song_id }]).then(() => {
+      res.sendStatus(200);
+    }).catch(console.err);
+  }
+
+  const add_song = async (song_id, playlist_id) => {
+    await spotifyApi.addTracksToPlaylist(playlist_id, [song_id]).then(() => {}).catch(console.err);
+  }
+
+  app.post("api/remove_song", checkAuthenticated, async (req, res) => {
+    const { song_id, playlist_id } = req.body;
+    await remove_song(song_id, playlist_id);
+    res.send(200)
+  })
+
+  app.post("/api/add_song", checkAuthenticated, async (req, res) => {
+    const { song_id, playlist_id } = req.body;
+    await add_song(song_id, playlist_id);
+    res.send(200);
+  });
+
+  app.post("/api/move_song", checkAuthenticated, async (req, res) => {
+    const { song_id, source_playlist_id, dest_playlist_id } = req.body;
+    await remove_song(song_id, source_playlist_id);
+    await add_song(song_id, dest_playlist_id);
+    res.send(200);
+  })
+  
+  app.get("/api/resume_player", async (req, res) => {
     spotifyApi.play().then(
       function () {
         console.log("Playback started");
@@ -246,7 +284,7 @@ client.connect().then((db) => {
     );
   })
 
-  app.get("/api/pausePlayer", async (req, res) => {
+  app.get("/api/pause_player", async (req, res) => {
     spotifyApi.pause().then(
       function () {
         console.log("Playback paused");
@@ -260,7 +298,7 @@ client.connect().then((db) => {
     );
   })
 
-  app.get("/api/skipToNextTrack", async (req, res) => {
+  app.get("/api/skip_to_next_track", async (req, res) => {
     spotifyApi.skipToNext().then(
       function () {
         console.log("Skip to next");
@@ -273,7 +311,7 @@ client.connect().then((db) => {
     );
   })
 
-  app.get("/api/skipToPreviousTrack", async (req, res) => {
+  app.get("/api/skip_to_previous_track", async (req, res) => {
     spotifyApi.skipToPrevious().then(
       function () {
         console.log("Skip to previous");
@@ -286,7 +324,7 @@ client.connect().then((db) => {
     );
   })
 
-  app.get("/api/getCurrentPlayingTrackInfo", async (req, res) => {
+  app.get("/api/get_currently_playing_track_info", async (req, res) => {
     res.json(spotifyApi.getMyCurrentPlayingTrack().then(
       function (data) {
         if (data.body.item === undefined) {
