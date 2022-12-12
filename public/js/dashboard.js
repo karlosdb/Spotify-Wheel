@@ -20,9 +20,9 @@ document.addEventListener(
   false
 );
 
-document.getElementById('logout-button').addEventListener('click', (event) => {
-    event.preventDefault();
-    window.location.href = '/logout'
+document.getElementById("logout-button").addEventListener("click", (event) => {
+  event.preventDefault();
+  window.location.href = "/logout";
 });
 
 document.getElementById("comment-button").addEventListener("click", () => {
@@ -71,21 +71,16 @@ document.getElementById("add-button").addEventListener("click", async () => {
   const res = await fetch("/api/get_currently_playing_track_info");
   const songObj = await res.json();
 
-  const songURI = songObj.uri;
-
-  console.log(focusedPlaylistID, 'focused playllsit', songObj.uri, 'song uri')
-
+  console.log(focusedPlaylistID, "focused playllsit", songObj.uri, "song uri");
 
   await fetch("/api/add_song", {
     method: "POST",
     headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+      Accept: "application/json",
+      "Content-Type": "application/json",
     },
     body: JSON.stringify([songObj.uri, focusedPlaylistID]),
   });
-//   const data = await response.json();
-//   console.log(data);
 });
 
 document.getElementById("move-button").addEventListener("click", async () => {
@@ -95,9 +90,19 @@ document.getElementById("move-button").addEventListener("click", async () => {
 });
 
 document.getElementById("delete-button").addEventListener("click", async () => {
-  const response = await fetch("/api/remove_song");
-  const data = await response.json();
-  console.log(data);
+    const res = await fetch("/api/get_currently_playing_track_info");
+    const songObj = await res.json();
+  
+    console.log(focusedPlaylistID, "focused playllsit", songObj.uri, "song uri");
+  
+    await fetch("/api/remove_song", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify([songObj.uri, focusedPlaylistID]),
+    });
 });
 
 document
