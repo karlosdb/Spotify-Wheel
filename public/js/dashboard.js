@@ -31,11 +31,7 @@ let currentUrl = window.location.href
 let arr = currentUrl.split('/')
 arr = arr.slice(0, -1)
 
-console.log(arr)
-
 currentUrl = arr.join('/')
-
-console.log(currentUrl)
 
 function togglePausePlay() {
     document.getElementById('play-circle-button').classList.toggle('hidden');
@@ -102,17 +98,17 @@ async function loadPlaylists() {
         element.id = playlists[i][1];
         element.innerHTML = playlists[i][0];
         element.addEventListener('click', async () => {
-            const response = await fetch(`${currentUrl}/api/get_songs/${playlists[i][1]}`);
+            element.classList.toggle("selected");
+            const response = await fetch('/api/get_songs/${playlists[i][1]}');
             const songs = await response.json();
             document.getElementById('current-playlist').innerHTML = playlists[i][0];
             renderSongs(songs);
-        })
+        });
         playlistsDiv.appendChild(element)
     }
 }
 
 function renderSongs(songs) {
-    console.log(songs);
     const songList = document.getElementById('playlist-songs');
     songList.innerHTML = '';
     for (const song of songs) {
