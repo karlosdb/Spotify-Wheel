@@ -12,6 +12,9 @@ window.onload = async (event) => {
   })
 };
 
+
+let song_uri = "";
+
 async function loadComments() {
   const response = await fetch("/api/get_currently_playing_track_info");
   const data = await response.json();
@@ -19,6 +22,9 @@ async function loadComments() {
   document.getElementById("song-name").innerHTML = `Name: ${data.name}`;
   document.getElementById("album-name").innerHTML = `Album: ${data.album}`;
   document.getElementById("artist-name").innerHTML = `Artist: ${data.artist}`;
+
+
+  song_uri = data.uri;
 
   const comments = await fetch("/api/get_comments", {
     method: "POST",
@@ -64,7 +70,13 @@ currentUrl = arr.join('/')
 
 
 document.getElementById('submit-button').addEventListener('click', async () => {
-  const response = await fetch(`${currentUrl}/api/save_comment`);
-  const data = await response.json();
-  console.log(data);
-})
+  // const response = await fetch(`${currentUrl}/api/save_comment`);
+  await fetch("/api/save_comment", {
+    method: "POST",
+    headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify([document.getElementById("comment-area").value, song_uri]),
+  });
+});

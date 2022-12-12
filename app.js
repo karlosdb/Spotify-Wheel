@@ -238,20 +238,21 @@ client.connect().then((db) => {
   
 
   // *** API CALLS ***
-  app.post("/api/save_comment", checkAuthenticated, async (req, res) => {
-    const { comment, song_id } = req.body.comment;
+  app.post("/api/save_comment", checkAuthenticated, (req, res) => {
+    const [ comment, song_id ] = req.body;
+    console.log(req.user, comment, song_id);
     db.collection("comments")
       .insertOne({ comment, song_id, user: req.user })
-      .then((_) => res.status(200))
+      .then((_) => res.sendStatus(200))
       .catch(console.err);
   });
 
   app.post("/api/get_comments", checkAuthenticated, async (req, res) => {
     const [ song_id ] = req.body;
-    res.json(await db.collection("comments").find({ song_id }).toArray());
+    db.collection("comments").find({ song_id }).toArray().then((comments) => {
+      res.json(comments.map(x => ({comment: x.comment, user: x.user})));
+    })
   });
-
-
 
 
   // *** SPOTIFY HELPERS ***
