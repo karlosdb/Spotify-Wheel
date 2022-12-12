@@ -26,6 +26,8 @@ OAuth
 Dashboard
 Comments
 
+APIs: 
+We use the "Spotify WebAPI Node" (https://github.com/thelinmichael/spotify-web-api-node) to connect to the user's spotify account. 
 
 DATABASE:
 For our website, we used MongoDB for our database. In our database, we have two collections, users and comments. Users contains username/passwords and 
@@ -75,6 +77,13 @@ Saves a comment in the database to the corresponding song
 
 POST /api.get_comments:
 Returns an array of comments for a song. 
+
+Authentication:
+We authenticate users by storing their username, hashed password, and salt in our database. Whenever a user creates an account, we compute a hash
+of their password using a salt and store the information. When logging in, we will make a POST request to our endpoint with the username and password. 
+We will find the document with the user's username, and use our hashing function with the stored salt to see if the passwords match. If they are, they 
+are successfully authenticated, otherwise they will be denied and have to try again to login. This authentication allows them to connect their spotify
+and access their dashboard along with all the playlists and controls. 
 
 
 
