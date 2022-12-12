@@ -36,23 +36,29 @@ currentUrl = arr.join('/')
 
 console.log(currentUrl)
 
+function togglePausePlay() {
+    document.getElementById('play-circle-button').classList.toggle('hidden');
+    document.getElementById('pause-circle-button').classList.toggle('hidden');
+}
 
 loadPlaylists()
 
 document.getElementById('skip-back-button').addEventListener('click', async () => {
-    const response = await fetch(`${currentUrl}/api/skip_to_previous_track`);
+    const response = await fetch('/api/skip_to_previous_track');
     const data = await response.json();
     console.log(data);
+    togglePausePlay();
 })
 
 document.getElementById('skip-forward-button').addEventListener('click', async () => {
-    const response = await fetch(`${currentUrl}/api/skip_to_next_track`);
+    const response = await fetch('/api/skip_to_next_track');
     const data = await response.json();
+    togglePausePlay();
     console.log(data);
 })
 
 document.getElementById('add-button').addEventListener('click', async () => {
-    const response = await fetch(`${currentUrl}/api/add_song`);
+    const response = await fetch('/api/add_song');
     const data = await response.json();
     console.log(data);
 })
@@ -70,15 +76,13 @@ document.getElementById('delete-button').addEventListener('click', async () => {
 })
 
 document.getElementById('play-circle-button').addEventListener('click', async () => {
-    document.getElementById('play-circle-button').classList.toggle('hidden');
-    document.getElementById('pause-circle-button').classList.toggle('hidden');
+    togglePausePlay();
     const response = await fetch('/api/resume_player');
     const data = await response.json();
 })
 
 document.getElementById('pause-circle-button').addEventListener('click', async () => {
-    document.getElementById('play-circle-button').classList.toggle('hidden');
-    document.getElementById('pause-circle-button').classList.toggle('hidden');
+    togglePausePlay();
     const response = await fetch('/api/pause_player');
     const data = await response.json();
 })
