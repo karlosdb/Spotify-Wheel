@@ -16,9 +16,9 @@
     <div class="wrapper">
       <h1 class="login-header" > Spotify Wheel </h1>
       <div id="formContent">
-        <form action="dashboard" method="GET" id="login-form">
-          <input type="text" autocomplete="username" id="Username" placeholder="Username">
-          <input type="password" autocomplete = "current-password" id="password" placeholder="Password">
+        <form action="login" method="post" id="login-form">
+          <input type="text" autocomplete="username" id="Username" name="username" placeholder="Username">
+          <input type="password" autocomplete = "current-password" id="password" name="password" placeholder="Password">
           <input type="password" autocomplete = "off" class="hidden" id="confirm-password" placeholder="Confirm Password">
           <i class="bi bi-eye-slash" id="show-password"></i>
           <input type="submit" id="submit-login" value="Log In">
