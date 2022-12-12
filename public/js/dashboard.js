@@ -8,6 +8,15 @@
 //   "BQB0q4fBd2hbRuB0RcEGo_qVKB2-4uB4q0Z5dGAuayuw9NpM3LCHohD6-spQm0Z-KGSjnxER75j8ZAJaBo6ef_se30DkFLmSaiOAld-O8ZpQN1G25Bm8Czvkqwer5WvwYyYzIrZazz1rdPytWkxofrVaI8GqdmAEmXHpMuawF579AQVgywyvNl1_DZan65SJQhEfknErYhDTAhgjDULCEClgDaBRDROaNEL0Ec_oMMNZ8BHMqqaoyrBdE5b34TK6p0qNdHQPxPyV50QZHwaMzCdRoM3oRpuiU_BDm5KNXraYJ2Y6gX8RIAzJEamK6KOjTyY";
 // const spotifyApi = new SpotifyWebApi();
 
+document.addEventListener('mousedown', function(event) {
+    if (event.detail > 1) {
+      event.preventDefault();
+      // of course, you still do not know what you prevent here...
+      // You could also check event.ctrlKey/event.shiftKey/event.altKey
+      // to not prevent something useful.
+    }
+  }, false);
+
 document.getElementById('logout-button').addEventListener('click', () => {
     window.location.href = '/logout'
 });
@@ -78,6 +87,15 @@ document.getElementById('delete-button').addEventListener('click', async () => {
     console.log(data);
 })
 
+document.getElementById('play-circle-button').addEventListener('click', async () => {
+    document.getElementById('play-circle-button').classList.toggle('hidden');
+    document.getElementById('pause-circle-button').classList.toggle('hidden');
+})
+
+document.getElementById('pause-circle-button').addEventListener('click', async () => {
+    document.getElementById('play-circle-button').classList.toggle('hidden');
+    document.getElementById('pause-circle-button').classList.toggle('hidden');
+})
 
 async function loadPlaylists() {
     const response = await fetch('/api/playlists');
