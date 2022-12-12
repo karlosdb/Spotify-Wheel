@@ -338,7 +338,10 @@ client.connect().then((db) => {
             artist: data.body.item.artists[0].name,
             album: data.body.item.album.name,
             imageURL: data.body.item.album.images[0].url,
-            uri: data.body.item.uri
+            uri: data.body.item.uri,
+            id: data.body.item.id,
+            album_uri: data.body.item.album.uri,
+            track_number: data.body.item.track_number
           };
         }
       },

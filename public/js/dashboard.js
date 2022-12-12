@@ -107,6 +107,30 @@ document.getElementById("add-button").addEventListener("click", async () => {
     },
     body: JSON.stringify([songObj.uri, focusedPlaylistID]),
   });
+
+  const element = document.createElement("li");
+  element.classList.add("list-group-item");
+  element.innerHTML = songObj.name;
+  element.id = songObj.id;
+  element.addEventListener('click', async (e) => {
+    for (const node of document.getElementById("playlist-songs").childNodes) {
+      if (node.id === selectedSong.id) {
+        node.classList.toggle("selected");
+      }
+    }
+    selectedSong.id = songObj.id;
+    selectedSong.uri = songObj.uri;
+    e.currentTarget.classList.toggle("selected");  
+    await fetch("/api/play_song", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify([songObj.album_uri, songObj.track_number]),
+    });
+    })
+    songList.appendChild(element);
 });
 
 document.getElementById("delete-button").addEventListener("click", async () => {
