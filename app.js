@@ -62,7 +62,6 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true })); // allow URLencoded data
 app.use(express.json());
 
-app.use(cookieParser());
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
@@ -217,7 +216,7 @@ client.connect().then((db) => {
   });
 
 
-  app.get("/api/populate_playlists", async (req, res) => {
+  app.get("/api/playlists", async (req, res) => {
     const data = await spotifyApi.getUserPlaylists(userID);
     res.json(data.body.items
       .filter((playlist) => playlist.owner.id === userID)
