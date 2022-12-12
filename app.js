@@ -118,15 +118,22 @@ client.connect().then((db) => {
     failureRedirect: "/",
   }));
 
+
+
+  app.post("api/checkUsername", async (req, res) => {
+    const { username } = req.body;
+     res.json({success: await findUser(username)});
+  })
+
   app.post("/register", async (req, res) => {
-    console.log(req.body)
     const { username, password } = req.body;
+
     if (findUser(username)) {
       res.json({success: false, message: "User already exists"})
-    }
-    else {
+    } else {
       res.json({success: true, message: "User created"})
     }
+
     if (await addUser(username, password)) {
       res.redirect("/");
     } 
