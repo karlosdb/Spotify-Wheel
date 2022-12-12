@@ -3,14 +3,11 @@ const data = require("./data");
 
 const express = require("express");
 const app = express();
-const cookieParser = require("cookie-parser");
+const minicrypt = require('./miniCrypt').MiniCrypt;
 
-const SpotifyWebApi = require("spotify-web-api-node");
-const sp = require("./spotify");
+const {spotifyApi, scopes} = require('./spotify');
+let userID;
 
-const minicrypt = require("./miniCrypt").MiniCrypt;
-
-const { spotifyApi, scopes } = require("./spotify");
 
 require("dotenv").config();
 
@@ -65,7 +62,6 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true })); // allow URLencoded data
 app.use(express.json());
 
-app.use(cookieParser());
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
@@ -108,13 +104,12 @@ client.connect().then((db) => {
   // no idea if you're suppposed to do this here
   passport.use(strategy);
 
-  app.post(
-    "/login",
-    passport.authenticate("local", {
-      successRedirect: "/spotifyLogin",
-      failureRedirect: "/",
-    })
-  );
+  app.post("/login", passport.authenticate('local', {
+    successRedirect: "/spotifyLogin",
+    failureRedirect: "/",
+  }));
+
+
 
   app.post("/api/checkUsername", async (req, res) => {
     const { username } = req.body;
@@ -136,7 +131,7 @@ client.connect().then((db) => {
   };
 
   const checkLoggedIn = (req, res, next) => {
-    if (req.isAuthenticated()) return res.redirect("/dashboard");
+    if (req.isAuthenticated()) return res.redirect("/spotifyLogin");
     next();
   };
 
@@ -157,7 +152,6 @@ client.connect().then((db) => {
   app.get("/callback", (req, res) => {
     const error = req.query.error;
     const code = req.query.code;
-    const state = req.query.state;
 
     if (error) {
       console.error("Callback Error:", error);
@@ -165,24 +159,19 @@ client.connect().then((db) => {
       return;
     }
 
-    spotifyApi
-      .authorizationCodeGrant(code)
-      .then((data) => {
-        const access_token = data.body["access_token"];
-        const refresh_token = data.body["refresh_token"];
-        const expires_in = data.body["expires_in"];
+      spotifyApi
+        .authorizationCodeGrant(code)
+        .then(async (data) => {
+          access_token = data.body["access_token"];
+          const refresh_token = data.body["refresh_token"];
+          const expires_in = data.body["expires_in"];
 
-        spotifyApi.setAccessToken(access_token);
-        spotifyApi.setRefreshToken(refresh_token);
-
-        console.log("access_token:", access_token);
-        console.log("refresh_token:", refresh_token);
-
-        res.cookie("access_token", access_token, {
-          maxAge: 1000 * expires_in,
-          httpOnly: true,
-          overwrite: true,
-        });
+          spotifyApi.setAccessToken(access_token);
+          spotifyApi.setRefreshToken(refresh_token);
+          
+          await spotifyApi.getMe().then(function (data) {
+            userID = data.body.id;
+          });
 
         console.log(
           `Sucessfully retreived access token. Expires in ${expires_in} s.`
@@ -190,19 +179,11 @@ client.connect().then((db) => {
 
         res.redirect("/dashboard"); // after loggin in, redirect back to dashboard
 
-        setInterval(async () => {
-          const data = await sp.spotifyApi.refreshAccessToken();
-          const access_token = data.body["access_token"];
-          //sp.accessToken = access_token; // set access token in spotify.js
-          console.log("The access token has been refreshed!");
-          console.log("access_token:", access_token);
-          sp.spotifyApi.setAccessToken(access_token);
-          res.cookie("access_token", access_token, {
-            maxAge: 1000 * expires_in,
-            httpOnly: true,
-            overwrite: true,
-          });
-        }, (expires_in / 2) * 1000);
+      setInterval(async () => {
+        const data = await spotifyApi.refreshAccessToken();
+        access_token = data.body["access_token"];
+        spotifyApi.setAccessToken(access_token);
+      }, (expires_in / 2) * 1000);
       })
       .catch((error) => {
         console.error("Error getting Tokens:", error);
@@ -234,6 +215,16 @@ client.connect().then((db) => {
       .catch(console.err);
   });
 
+
+  app.get("/api/playlists", async (req, res) => {
+    const data = await spotifyApi.getUserPlaylists(userID);
+    res.json(data.body.items
+      .filter((playlist) => playlist.owner.id === userID)
+      .map((playlist) => {
+        return [playlist.name, playlist.id];
+      })
+    );
+  })
 
 
   let port = process.env.PORT;

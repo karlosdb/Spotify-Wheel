@@ -39,7 +39,7 @@ console.log(currentUrl)
 // }
 
 
-// loadPlaylists()
+loadPlaylists()
 
 document.getElementById('add-button').addEventListener('click', async () => {
     const response = await fetch(`${currentUrl}/api/add_song`);
@@ -61,16 +61,15 @@ document.getElementById('delete-button').addEventListener('click', async () => {
 
 
 async function loadPlaylists() {
-    console.log('IS ANY OF THIS SHIT RUNNING??????????')
-    const response = await fetch(currentUrl + '/api/playlists')
+    const response = await fetch('/api/playlists');
     const playlists = await response.json();
 
-    playlistsDiv.innerHTML = ""
+    playlistsDiv.innerHTML = "";
     for (let i = 0; i < playlists.length; i++){
         const element = document.createElement('li')
         element.classList.add('list-group-item')
-        element.id = playlists[i]
-        element.innerHTML = playlists[i]
+        element.id = playlists[i][0];
+        element.innerHTML = playlists[i][0];
         element.addEventListener('click', async () => {
             const response = await fetch(`${currentUrl}/api/get_songs/${playlists[i]}`);
             const songs = await response.json();
