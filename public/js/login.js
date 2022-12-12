@@ -1,7 +1,22 @@
 
 
 document.getElementById('submit-login').addEventListener('click', (event) => {
-  window.location.href = 'dashboard';
+  event.preventDefault();
+  const loginForm = document.getElementById("login-form");
+  if(document.getElementById("submit-login").value === "Register") {
+    if (document.getElementById("password").value.length < 5) {
+      alert("password too short, choose a password longer than 5 characters long");
+    }
+    else if (document.getElementById("password").value === document.getElementById("confirm-password").value) {
+      loginForm.requestSubmit();
+    }
+    else {
+      alert("passwords don't match");
+    }
+  }
+  else {
+    loginForm.requestSubmit();
+  }
 });
 
 document.getElementById("show-password").addEventListener('click', (event) => {
