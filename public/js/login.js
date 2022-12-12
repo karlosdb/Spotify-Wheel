@@ -1,6 +1,6 @@
 
 
-document.getElementById('submit-login').addEventListener('click', (event) => {
+document.getElementById('submit-login').addEventListener('click', async (event) => {
   event.preventDefault();
   const loginForm = document.getElementById("login-form");
   if(document.getElementById("submit-login").value === "Register") {
@@ -8,7 +8,30 @@ document.getElementById('submit-login').addEventListener('click', (event) => {
       alert("password too short, choose a password longer than 5 characters long");
     }
     else if (document.getElementById("password").value === document.getElementById("confirm-password").value) {
-      loginForm.requestSubmit();
+      const response = await fetch("/api/checkUsername", {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        body: JSON.stringify({
+          username: document.getElementById("username").value,
+        })
+      });
+      if (response.ok) {
+        const is_valid = await response.json();
+        if (is_valid.success) {
+          alert("successfully registered, please login now");
+          loginForm.requestSubmit();
+        }
+        else {
+          alert("username taken");
+        }
+      }
     }
     else {
       alert("passwords don't match");

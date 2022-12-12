@@ -8,6 +8,9 @@
 //   "BQB0q4fBd2hbRuB0RcEGo_qVKB2-4uB4q0Z5dGAuayuw9NpM3LCHohD6-spQm0Z-KGSjnxER75j8ZAJaBo6ef_se30DkFLmSaiOAld-O8ZpQN1G25Bm8Czvkqwer5WvwYyYzIrZazz1rdPytWkxofrVaI8GqdmAEmXHpMuawF579AQVgywyvNl1_DZan65SJQhEfknErYhDTAhgjDULCEClgDaBRDROaNEL0Ec_oMMNZ8BHMqqaoyrBdE5b34TK6p0qNdHQPxPyV50QZHwaMzCdRoM3oRpuiU_BDm5KNXraYJ2Y6gX8RIAzJEamK6KOjTyY";
 // const spotifyApi = new SpotifyWebApi();
 
+document.getElementById('logout-button').addEventListener('click', () => {
+    window.location.href = '/logout'
+});
 
 document.getElementById('comment-button').addEventListener('click', () => {
     window.location.href = '/comments'
@@ -36,7 +39,7 @@ console.log(currentUrl)
 // }
 
 
-loadPlaylists()
+// loadPlaylists()
 
 document.getElementById('add-button').addEventListener('click', async () => {
     const response = await fetch(`${currentUrl}/api/add_song`);
@@ -81,7 +84,6 @@ async function loadPlaylists() {
 
 const firstPlaylistDiv = document.getElementById('2 Cool 4 Skool')
 
-firstPlaylistDiv.addEventListener('click', loadSongs)
 
 // async function loadSongs(){
 //     console.log('FAT')
