@@ -143,7 +143,7 @@ client.connect().then((db) => {
     next();
   }
 
-  app.delete("/logout", (req,res) => {
+  app.get("/logout", (req,res) => {
     req.logout();
     res.redirect("/");
  })
