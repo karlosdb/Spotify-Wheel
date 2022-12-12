@@ -41,6 +41,24 @@ console.log(currentUrl)
 
 loadPlaylists()
 
+document.getElementById('play-button').addEventListener('click', async () => {
+    const response = await fetch(`${currentUrl}/api/resume_player`);
+    const data = await response.json();
+    console.log(data);
+})
+
+document.getElementById('skip-back-button').addEventListener('click', async () => {
+    const response = await fetch(`${currentUrl}/api/skip_to_previous_track`);
+    const data = await response.json();
+    console.log(data);
+})
+
+document.getElementById('skip-foreward-button').addEventListener('click', async () => {
+    const response = await fetch(`${currentUrl}/api/skip_to_next_track`);
+    const data = await response.json();
+    console.log(data);
+})
+
 document.getElementById('add-button').addEventListener('click', async () => {
     const response = await fetch(`${currentUrl}/api/add_song`);
     const data = await response.json();

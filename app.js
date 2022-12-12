@@ -214,7 +214,7 @@ client.connect().then((db) => {
     res.json(await db.collection("comments").find({ song_id }).toArray());
   });
 
-  app.get("/api/resumePlayer", async (req, res) => {
+  app.get("/api/resume_player", async (req, res) => {
     spotifyApi.play().then(
       function () {
         console.log("Playback started");
@@ -228,7 +228,7 @@ client.connect().then((db) => {
     );
   })
 
-  app.get("/api/pausePlayer", async (req, res) => {
+  app.get("/api/pause_player", async (req, res) => {
     spotifyApi.pause().then(
       function () {
         console.log("Playback paused");
@@ -242,7 +242,7 @@ client.connect().then((db) => {
     );
   })
 
-  app.get("/api/skipToNextTrack", async (req, res) => {
+  app.get("/api/skip_to_next_track", async (req, res) => {
     spotifyApi.skipToNext().then(
       function () {
         console.log("Skip to next");
@@ -255,7 +255,7 @@ client.connect().then((db) => {
     );
   })
 
-  app.get("/api/skipToPreviousTrack", async (req, res) => {
+  app.get("/api/skip_to_previous_track", async (req, res) => {
     spotifyApi.skipToPrevious().then(
       function () {
         console.log("Skip to previous");
@@ -268,7 +268,7 @@ client.connect().then((db) => {
     );
   })
 
-  app.get("/api/getCurrentPlayingTrackInfo", async (req, res) => {
+  app.get("/api/get_currently_playing_track_info", async (req, res) => {
     res.json(spotifyApi.getMyCurrentPlayingTrack().then(
       function (data) {
         if (data.body.item === undefined) {
