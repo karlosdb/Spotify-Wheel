@@ -243,19 +243,18 @@ client.connect().then((db) => {
 
   // *** SPOTIFY HELPERS ***
   const remove_song = async (song_id, playlist_id) => {
-    await spotifyApi.removeTracksFromPlaylist(playlist_id, [{ uri: song_id }]).then(() => {
-      res.sendStatus(200);
-    }).catch(console.err);
+    await spotifyApi.removeTracksFromPlaylist(playlist_id, [{ uri: song_id }]).then(() => {}).catch(console.err);
   }
 
   const add_song = async (song_id, playlist_id) => {
     await spotifyApi.addTracksToPlaylist(playlist_id, [song_id]).then(() => {}).catch(console.err);
   }
 
-  app.post("api/remove_song", checkAuthenticated, async (req, res) => {
-    const { song_id, playlist_id } = req.body;
+  app.post("/api/remove_song", checkAuthenticated, async (req, res) => {
+    const [song_id, playlist_id ] = req.body;
+    console.log(song_id, playlist_id, 'THIS IS THE POST ')
     await remove_song(song_id, playlist_id);
-    res.send(200)
+    res.send(200);
   })
 
   app.post("/api/add_song", checkAuthenticated, async (req, res) => {
