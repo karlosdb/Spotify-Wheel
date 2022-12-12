@@ -145,7 +145,7 @@ client.connect().then((db) => {
     next();
   }
 
-  app.get("/logout", (req,res) => {
+  app.get("/logout", checkLoggedIn, (req,res) => {
     req.logout((err) => {
       if (err) { return next(err); }
       res.redirect('/');
