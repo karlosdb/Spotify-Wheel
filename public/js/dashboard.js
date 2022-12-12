@@ -20,8 +20,9 @@ document.addEventListener(
   false
 );
 
-document.getElementById("logout-button").addEventListener("click", () => {
-  window.location.href = "/logout";
+document.getElementById('logout-button').addEventListener('click', (event) => {
+    event.preventDefault();
+    window.location.href = '/logout'
 });
 
 document.getElementById("comment-button").addEventListener("click", () => {
