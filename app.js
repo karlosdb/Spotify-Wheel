@@ -164,9 +164,18 @@ client.connect().then((db) => {
   // *** SPOTIFY ***
   app.get("/spotifyLogin", (req, res) => {
     //console.log(`${req.protocol}://${req.headers.host}/callback`)
+
+    let apiSecret;
+    if (!process.env.URI) {
+      secrets = require("./secrets.json");
+      apiSecret = secrets.SPOTIFYSECRET;
+    } else {
+      apiSecret = process.env.SPOTIFYSECRET;
+    }
+
     spotifyApi = new SpotifyWebApi({
       clientId: '5bb105cf8e7a4b4dbd81c6db928df2c9',
-      clientSecret: '58a0ec2e824447f6bc21c77cc5956003',
+      clientSecret: apiSecret,
       redirectUri: `${req.protocol}://${req.headers.host}/callback`
     });
     res.redirect(spotifyApi.createAuthorizeURL(scopes));
