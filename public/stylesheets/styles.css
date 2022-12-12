@@ -2,6 +2,10 @@
   display: none !important;
 }
 
+.selected {
+  background-color: grey !important;
+}
+
 body {
   font-family: "Poppins", sans-serif;
   height: 100vh;
@@ -117,9 +121,13 @@ form i {
 }
 
 .column-header {
-  padding-top: 50px;
+  display:flex;
   height: 10%;
   margin-bottom: 0;
+  font-size: 200%!important;
+  line-height: 115%!important;
+  align-items: center;
+  justify-content: center;
 }
 
 .list-group{
@@ -139,6 +147,7 @@ form i {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
   height: 10%;
   width: 100%;
   border: 2px solid black;
@@ -175,7 +184,10 @@ form i {
 
 .buttons {
   display: flex;
-  flex-direction: row;
+  padding-right: 20px;
+  justify-content: center;
+  align-items: center;
+  width: 20%;
 }
 
 ion-icon {
@@ -241,4 +253,10 @@ ion-icon {
 .follow {
   cursor: pointer;
   padding-right: 5px;
+}
+
+.back-button {
+  position: absolute;
+  top: 15px;
+  left: 15px;
 }

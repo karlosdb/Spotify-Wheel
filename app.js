@@ -62,6 +62,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true })); // allow URLencoded data
 app.use(express.json());
 
+
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const client = new MongoClient(uri, {
@@ -126,20 +127,32 @@ client.connect().then((db) => {
     if (req.isAuthenticated()) {
       return next();
     }
-    res.redirect("/");
+    console.log(req.originalUrl);
+    console.log(req.hostname);
+    res.redirect('/');
   };
 
+  app.get("/authenticated", (req, res, next) => {
+    if (req.isAuthenticated()) {
+      res.json({authenticated: true});
+    }
+    else {
+      res.json({authenticated: false});
+    }
+  });
+
   const checkLoggedIn = (req, res, next) => {
-    if (req.isAuthenticated()) return res.redirect("/dashboard");
+    if (req.isAuthenticated()) return res.redirect("/spotifyLogin");
     next();
   };
 
-  app.get("/logout", checkLoggedIn, (req, res) => {
+  app.get("/logout", checkAuthenticated, (req, res) => {
     req.logout((err) => {
       if (err) {
         return next(err);
+      } else {
+        res.redirect("/");
       }
-      res.redirect("/");
     });
   });
 
@@ -167,9 +180,11 @@ client.connect().then((db) => {
         spotifyApi.setAccessToken(access_token);
         spotifyApi.setRefreshToken(refresh_token);
 
+
       console.log(
         `Sucessfully retreived access token. Expires in ${expires_in} s.`
       );
+
       
       res.redirect("/dashboard"); // after loggin in, redirect back to dashboard
 
@@ -197,7 +212,7 @@ client.connect().then((db) => {
   app.get("/comments", checkAuthenticated, function (req, res, next) {
     res.sendFile(path.join(__dirname, "public/comments.html"));
   });
-  
+
   app.get("/api/playlists", async (req, res) => {
     await spotifyApi.getMe().then(async (data) => {
       res.json((await spotifyApi.getUserPlaylists()).body.items
@@ -210,70 +225,73 @@ client.connect().then((db) => {
   });
 
   app.get("/api/get_songs/:playlist/", async (req, res) => {
-    spotifyApi.getPlaylist(req.params.playlist)
-      .then((data) => {
-        res.json(data.body.tracks.items.map((track) => track.track.name));
+    spotifyApi.getPlaylistTracks(req.params.playlist)
+      .then(async (data) => {
+        let next = data.body.next;
+        let songs = data.body.items.map((track) => {
+            return [track.track.name, track.track.track_number, track.track.album.uri, track.track.id, track.track.uri];
+          });
+        let offset = 0;
+        while (next) {
+          const new_songs = await spotifyApi.getPlaylistTracks(req.params.playlist, options={offset: offset+100});
+          songs = songs.concat(new_songs.body.items.map((track) => {
+            return [track.track.name, track.track.track_number, track.track.album.uri, track.track.id, track.track.uri];
+          }));
+          offset+=100;
+          next = new_songs.body.next;
+        }
+        console.log(songs.length);
+        res.json(songs.reverse());
       }, function(err) {
         console.log('Something went wrong!', err);
       });
   })
 
+  
+
   // *** API CALLS ***
-  app.post("/api/save_comment", checkAuthenticated, async (req, res) => {
-    const { comment, song_id } = req.body.comment;
+  app.post("/api/save_comment", checkAuthenticated, (req, res) => {
+    const [ comment, song_id ] = req.body;
+    console.log(req.user, comment, song_id);
     db.collection("comments")
       .insertOne({ comment, song_id, user: req.user })
-      .then((_) => res.status(200))
+      .then((_) => res.sendStatus(200))
       .catch(console.err);
   });
 
   app.post("/api/get_comments", checkAuthenticated, async (req, res) => {
-    const { song_id } = req.body;
-    res.json(await db.collection("comments").find({ song_id }).toArray());
-  });
-
-  app.get("/api/get_playlists", checkAuthenticated, async (req, res) => {
-    const ID = (await spotifyApi.getMe()).body.id
-    spotifyApi.getUserPlaylists().then(response => response.body.items).then(playlists => {
-      res.json(playlists.filter(playlist => playlist.owner.id === ID))
+    const [ song_id ] = req.body;
+    db.collection("comments").find({ song_id }).toArray().then((comments) => {
+      res.json(comments.map(x => ({comment: x.comment, user: x.user})));
     })
   });
 
 
   // *** SPOTIFY HELPERS ***
   const remove_song = async (song_id, playlist_id) => {
-    await spotifyApi.removeTracksFromPlaylist(playlist_id, [{ uri: song_id }]).then(() => {
-      res.sendStatus(200);
-    }).catch(console.err);
+    await spotifyApi.removeTracksFromPlaylist(playlist_id, [{ uri: song_id }]).then(() => {}).catch(console.err);
   }
 
   const add_song = async (song_id, playlist_id) => {
     await spotifyApi.addTracksToPlaylist(playlist_id, [song_id]).then(() => {}).catch(console.err);
   }
 
-  app.post("api/remove_song", checkAuthenticated, async (req, res) => {
-    const { song_id, playlist_id } = req.body;
+  app.post("/api/remove_song", checkAuthenticated, async (req, res) => {
+    const [song_id, playlist_id ] = req.body;
     await remove_song(song_id, playlist_id);
-    res.send(200)
+    res.send(200);
   })
 
   app.post("/api/add_song", checkAuthenticated, async (req, res) => {
-    const { song_id, playlist_id } = req.body;
-    await add_song(song_id, playlist_id);
+    const [song_uri, playlist_id] = req.body;
+    await add_song(song_uri, playlist_id);
     res.send(200);
   });
 
-  app.post("/api/move_song", checkAuthenticated, async (req, res) => {
-    const { song_id, source_playlist_id, dest_playlist_id } = req.body;
-    await remove_song(song_id, source_playlist_id);
-    await add_song(song_id, dest_playlist_id);
-    res.send(200);
-  })
-  
-  app.get("/api/resume_player", async (req, res) => {
-    spotifyApi.play().then(
+  app.post("/api/play_song", async (req, res) => {
+    const [album, offset] = req.body;
+    spotifyApi.play({"context_uri": album, "offset": {"position": offset-1}}).then(
       function () {
-        console.log("Playback started");
         res.json("Resumed Player")
       },
       function (err) {
@@ -284,47 +302,32 @@ client.connect().then((db) => {
     );
   })
 
-  app.get("/api/pause_player", async (req, res) => {
-    spotifyApi.pause().then(
-      function () {
-        console.log("Playback paused");
-        res.json("Playback paused")
-      },
-      function (err) {
-        //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
-        console.log("Something went wrong!", err);
-        res.json(err)
+  app.get("/api/resume_player", async (req, res) => {
+    spotifyApi.getMyCurrentPlaybackState().then(data => {
+      if (data.body && !data.body.is_playing) {
+        return spotifyApi.play()
       }
-    );
+    }).then((_) => res.json("Resumed Player")).catch(console.err);
+  })
+
+  app.get("/api/pause_player", async (req, res) => {
+    spotifyApi.getMyCurrentPlaybackState().then(data => {
+      if (data.body && data.body.is_playing) {
+        return spotifyApi.pause();
+      }
+    }).then((_) => res.json("Paused Player")).catch(console.err);
   })
 
   app.get("/api/skip_to_next_track", async (req, res) => {
-    spotifyApi.skipToNext().then(
-      function () {
-        console.log("Skip to next");
-        res.json("Skipped To Next Track")
-      },
-      function (err) {
-        //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
-        console.log("Something went wrong!", err);
-      }
-    );
+    spotifyApi.skipToNext().then((_) => res.json("Skipped To Next Track")).catch(console.err);
   })
 
   app.get("/api/skip_to_previous_track", async (req, res) => {
-    spotifyApi.skipToPrevious().then(
-      function () {
-        console.log("Skip to previous");
-        res.json("Skipped To Previous Track")
-      },
-      function (err) {
-        //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
-        console.log("Something went wrong!", err);
-      }
-    );
+    spotifyApi.skipToPrevious().then((_) => res.json("Skipped To Previous Track")).catch(console.err);
   })
 
   app.get("/api/get_currently_playing_track_info", async (req, res) => {
+    res.json(await spotifyApi.getMyCurrentPlayingTrack().then(
     res.json(await spotifyApi.getMyCurrentPlayingTrack().then(
       function (data) {
         if (data.body.item === undefined) {
@@ -334,8 +337,12 @@ client.connect().then((db) => {
           return {
             name: data.body.item.name,
             artist: data.body.item.artists[0].name,
+            album: data.body.item.album.name,
             imageURL: data.body.item.album.images[0].url,
-            uri: data.body.item.uri
+            uri: data.body.item.uri,
+            id: data.body.item.id,
+            album_uri: data.body.item.album.uri,
+            track_number: data.body.item.track_number
           };
         }
       },
@@ -343,12 +350,21 @@ client.connect().then((db) => {
         console.log("Something went wrong!", err);
       }
     ))
+  });
+
+  app.get("/api/get_player_status", (req, res) => {
+    // console.log("getting player status")
+    // res.json(await spotifyApi.getMyCurrentPlaybackState().then((data) => {
+    //   console.log(data.body)
+    //   return {"is_playing": (data.body && data.body.is_playing)};
+    // }));
+
+    spotifyApi.getMyCurrentPlaybackState().then(data => {
+      res.json({is_playing: (data.body && data.body.is_playing)});
+    })
   })
 
-
-
-
-  let port = process.env.PORT;
+  let port = process.env.PORT
 
   if (port == null || port == "") {
     port = 8000;
