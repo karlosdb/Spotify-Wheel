@@ -25,7 +25,7 @@ const scopes = [
   var spotifyApi = new SpotifyWebApi({
     clientId: '5bb105cf8e7a4b4dbd81c6db928df2c9',
     clientSecret: '58a0ec2e824447f6bc21c77cc5956003',
-    redirectUri: 'http://localhost:8000/callback'
+    redirectUri: 'https://spotify-wheel.herokuapp.com/callback'
   });
 
   module.exports = {spotifyApi, scopes}
