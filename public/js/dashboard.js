@@ -207,7 +207,14 @@ function renderSongs(songs) {
       }
       selectedSong.id = song[3];
       selectedSong.uri = song[4];
-      e.currentTarget.classList.toggle("selected");  
+      e.currentTarget.classList.toggle("selected");
+      if (
+        document
+          .getElementById("pause-circle-button")
+          .classList.contains("hidden")
+      ) {
+        togglePausePlay();
+      }
       await fetch("/api/play_song", {
           method: "POST",
           headers: {
