@@ -70,14 +70,42 @@ Redirects to the comment page if user is logged in
 GET /api/playlists:
 Returns a list of all the playlists that the user owns
 
-GET /api/get_sonsgs/:playlist/:
+GET /api/get_songs/:playlist/:
 Returns a list of songs from the given playlist
 
 POST /api/save_comment:
 Saves a comment in the database to the corresponding song
 
-POST /api.get_comments:
+POST /api/get_comments:
 Returns an array of comments for a song. 
+
+POST /API/remove_song:
+Removes the currently playing song from the playlist
+
+POST /api/add_song:
+Adds currently playing song to the playlist
+
+POST /api/play_song:
+Plays the song that gets clicked.
+
+GET /api/resume_player:
+Resumes the song
+
+GET /api/pause_player:
+Pauses the song
+
+GET /api/skip_to_next_track:
+Skips to the next song in line
+
+GET /api/skip_to_previous_track:
+Skips to the previous song
+
+GET /api/get_currently_playing_track_info:
+returns the currently playing songs information.
+
+
+
+
 
 Authentication:
 We authenticate users by storing their username, hashed password, and salt in our database. Whenever a user creates an account, we compute a hash
