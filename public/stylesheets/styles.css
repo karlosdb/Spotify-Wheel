@@ -250,3 +250,9 @@ ion-icon {
   cursor: pointer;
   padding-right: 5px;
 }
+
+.back-button {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+}

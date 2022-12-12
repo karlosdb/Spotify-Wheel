@@ -266,7 +266,6 @@ client.connect().then((db) => {
 
   app.post("/api/remove_song", checkAuthenticated, async (req, res) => {
     const [song_id, playlist_id ] = req.body;
-    console.log(song_id, playlist_id, 'THIS IS THE POST ')
     await remove_song(song_id, playlist_id);
     res.send(200);
   })
@@ -277,13 +276,6 @@ client.connect().then((db) => {
     res.send(200);
   });
 
-  app.post("/api/move_song", checkAuthenticated, async (req, res) => {
-    const { song_id, source_playlist_id, dest_playlist_id } = req.body;
-    await remove_song(song_id, source_playlist_id);
-    await add_song(song_id, dest_playlist_id);
-    res.send(200);
-  })
-  
   app.post("/api/play_song", async (req, res) => {
     const [album, offset] = req.body;
     spotifyApi.play({"context_uri": album, "offset": {"position": offset-1}}).then(
@@ -299,11 +291,19 @@ client.connect().then((db) => {
   })
 
   app.get("/api/resume_player", async (req, res) => {
-    spotifyApi.play().then((_) => res.json("Resumed Player")).catch(console.err);
+    spotifyApi.getMyCurrentPlaybackState().then(data => {
+      if (data.body && !data.body.is_playing) {
+        return spotifyApi.play()
+      }
+    }).then((_) => res.json("Resumed Player")).catch(console.err);
   })
 
   app.get("/api/pause_player", async (req, res) => {
-    spotifyApi.pause().then((_) => res.json("Paused Player")).catch(console.err);
+    spotifyApi.getMyCurrentPlaybackState().then(data => {
+      if (data.body && data.body.is_playing) {
+        return spotifyApi.pause();
+      }
+    }).then((_) => res.json("Paused Player")).catch(console.err);
   })
 
   app.get("/api/skip_to_next_track", async (req, res) => {

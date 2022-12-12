@@ -7,7 +7,6 @@ window.onload = async (event) => {
     }
     else {
       loadComments();
-      renderComments(['hello asdkl;fjasdjofhasd jkjasdkj sdoajf ikl;asdj ofsdjosdf joasj o;ajsdf ohasdiol anljkashl iojioasdfiol asdfh uiolashsdf ihasdilh lasduh flasuihasdfil hsdiol', 'bello']);
     }
   })
 };
@@ -36,9 +35,8 @@ async function loadComments() {
   });
 
   const commentsData = await comments.json();
-
+  renderComments(commentsData);
   // TODO: LOOP THROUGH COMMENTS AND ADD THEM TO THE PAGE
-  console.log(commentsData);
 }
 
 
@@ -46,13 +44,14 @@ async function loadComments() {
 // input a list of strings/comments
 function renderComments(comments){
   const commentList = document.getElementById('comment-group')
+  commentList.innerHTML = '';
   for (const comment of comments){
     const element = document.createElement("li");
     element.classList.add("list-group-item");
     element.classList.add("comment-item");
     element.innerHTML = 
     `<a class = "follow"> + </a>
-    <a> ${comment} </a>
+    <a> ${comment.user} - ${comment.comment} </a>
     <a class = "follow"> ❤ </a>`
 
     commentList.appendChild(element)
@@ -79,4 +78,11 @@ document.getElementById('submit-button').addEventListener('click', async () => {
     },
     body: JSON.stringify([document.getElementById("comment-area").value, song_uri]),
   });
+  document.getElementById("comment-area").value = '';
+  loadComments();
 });
+
+document.getElementById('back-button').addEventListener('click', (event) => {
+  event.preventDefault();
+  window.location.href = '/dashboard';
+})

@@ -18,6 +18,11 @@ window.onload = async (event) => {
     }
     else {
       loadPlaylists();
+      (async () => {
+        if ((await ((await fetch("/api/get_player_status")).json())).is_playing) {
+          togglePausePlay();
+        }
+      })();
     }
   })
 };
@@ -104,17 +109,9 @@ document.getElementById("add-button").addEventListener("click", async () => {
   });
 });
 
-document.getElementById("move-button").addEventListener("click", async () => {
-  const response = await fetch("/api/move_song");
-  const data = await response.json();
-  console.log(data);
-});
-
 document.getElementById("delete-button").addEventListener("click", async () => {
     const res = await fetch("/api/get_currently_playing_track_info");
     const songObj = await res.json();
-  
-    console.log(focusedPlaylistID, "focused playllsit", songObj.uri, "song uri");
   
     await fetch("/api/remove_song", {
       method: "POST",
@@ -155,7 +152,6 @@ async function loadPlaylists() {
     element.addEventListener("click", async () => {
       //set focused playlist variable
       focusedPlaylistID = playlists[i][1];
-      console.log("focused playlist id: ", focusedPlaylistID);
 
       const response = await fetch(`/api/get_songs/${playlists[i][1]}`);
       const songs = await response.json();
@@ -167,7 +163,6 @@ async function loadPlaylists() {
 }
 
 function renderSongs(songs) {
-  //console.log(songs);
   const songList = document.getElementById("playlist-songs");
   songList.innerHTML = "";
   for (const song of songs) {
