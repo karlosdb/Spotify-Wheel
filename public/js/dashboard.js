@@ -132,7 +132,7 @@ async function loadPlaylists() {
     element.id = playlists[i][1];
     element.innerHTML = playlists[i][0];
     element.addEventListener("click", async () => {
-      //set focused plsylist variable
+      //set focused playlist variable
       focusedPlaylistID = playlists[i][1];
       console.log("focused playlist id: ", focusedPlaylistID);
 
@@ -152,7 +152,17 @@ function renderSongs(songs) {
   for (const song of songs) {
     const element = document.createElement("li");
     element.classList.add("list-group-item");
-    element.innerHTML = song;
+    element.innerHTML = song[0];
+    element.addEventListener('click', async () => {
+        await fetch("/api/play_song", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify([song[1]]),
+          });
+    })
     songList.appendChild(element);
   }
 }

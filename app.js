@@ -213,7 +213,7 @@ client.connect().then((db) => {
   app.get("/api/get_songs/:playlist/", async (req, res) => {
     spotifyApi.getPlaylist(req.params.playlist)
       .then((data) => {
-        res.json(data.body.tracks.items.map((track) => track.track.name));
+        res.json(data.body.tracks.items.map((track) => [track.track.name, track.track.uri]));
       }, function(err) {
         console.log('Something went wrong!', err);
       });
@@ -270,6 +270,21 @@ client.connect().then((db) => {
     res.send(200);
   })
   
+  app.post("/api/play_song", async (req, res) => {
+    const [song_uri] = req.body;
+    spotifyApi.play({"uris": [song_uri]}).then(
+      function () {
+        console.log("Playback started");
+        res.json("Resumed Player")
+      },
+      function (err) {
+        //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
+        console.log("Something went wrong!", err);
+        res.json(err)
+      }
+    );
+  })
+
   app.get("/api/resume_player", async (req, res) => {
     spotifyApi.play().then(
       function () {
