@@ -84,11 +84,23 @@ client.connect().then((db) => {
   db = db.db("db");
   const mc = new minicrypt();
 
+
+  //*** DB HELPERS *** 
+  const addUser = async (username, password) => {
+    const [salt, hash] = mc.hash(password);
+    const users = db.collection("users");
+    await users.insertOne({ username, salt, hash });
+  }
+
+  const findUser = async (username) => {
+    const users = db.collection("users");
+    return await users.findOne({username: username}) != null;
+  }
+
   // *** PASSPORT and LOGIN and USER CREATION ***
   const strategy = new LocalStrategy(
     async (username, password, done) => {
-      const users = db.collection("users");
-      const found = await users.findOne({ username: username });
+      const found = await findUser(username);
 
       if (!found || !mc.check(password, found.salt, found.hash)) {
         await new Promise((r) => setTimeout(r, 2000)); // two second delay
@@ -98,6 +110,7 @@ client.connect().then((db) => {
       done(null, username);
     }
   );
+
 
   // no idea if you're suppposed to do this here
   passport.use(strategy);
@@ -194,7 +207,7 @@ client.connect().then((db) => {
 
   // *** API CALLS ***
   app.get("/api/save_comment", (req, res) => {
-    db.collection("users").insertOne({ test: "test" })
+    db.collection("users").insertOne({ user })
       .then((_) => res.json("saved comment"))
       .catch(console.err);
   });
