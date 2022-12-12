@@ -122,7 +122,7 @@ client.connect().then((db) => {
     console.log(req.body)
     const { username, password } = req.body;
     if (findUser(username)) {
-      res.send("User already exists")
+      res.json({success: false, message: "User already exists"})
     }
     if (await addUser(username, password)) {
       res.redirect("/");
