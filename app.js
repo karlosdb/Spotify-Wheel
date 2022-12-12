@@ -124,6 +124,9 @@ client.connect().then((db) => {
     if (findUser(username)) {
       res.json({success: false, message: "User already exists"})
     }
+    else {
+      res.json({success: true, message: "User created"})
+    }
     if (await addUser(username, password)) {
       res.redirect("/");
     } 
