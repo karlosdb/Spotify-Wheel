@@ -120,10 +120,11 @@ client.connect().then((db) => {
 
 
 
-  app.post("api/checkUsername", async (req, res) => {
-     const { username } = req.body;
-     res.json({success: await findUser(username)});
-  })
+  app.post("/api/checkUsername", async (req, res) => {
+    const { username } = req.body;
+    res.json({success: await findUser(username) == null});
+  });
+
 
   app.post("/register", async (req, res) => {
     const { username, password } = req.body;
