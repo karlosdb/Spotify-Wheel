@@ -38,6 +38,15 @@ console.log(currentUrl)
 
 
 loadPlaylists()
+populateCurrentSongInfo()
+
+async function populateCurrentSongInfo() {
+    const response = await fetch(`${currentUrl}/api/get_currently_playing_track_info`);
+    const data = await response.json();
+    console.log(data)
+    document.getElementById('song-name').innerHTML = data.name
+    document.getElementById('artist-name').innerHTML = data.artist
+}
 
 document.getElementById('skip-back-button').addEventListener('click', async () => {
     const response = await fetch(`${currentUrl}/api/skip_to_previous_track`);
