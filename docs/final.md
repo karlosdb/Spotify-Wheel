@@ -92,6 +92,6 @@ Kevin: Responsible for frontend/backend interactions and user experience
 Karlos: API connections and connecting it with spotify controls and content. 
 
 Conclusion: 
-
+We had a great experience creating this project! For all of us, it was our first time creating a full stack website so we got to learn many different things! Some of the things we had to learn while creating our website was collaboration with each other on github, successful authentication of users, and using external APIs. However, we did have some trouble with successfully storing and logging users in and interacting with the spotify API to do what we wanted it to do. So, before starting this project, if we researched the api earlier and learned/set up a dummy backend login, we would have been in a much better spot. 
 
 
