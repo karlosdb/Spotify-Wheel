@@ -226,6 +226,83 @@ client.connect().then((db) => {
     );
   })
 
+  app.get("/api/resumePlayer", async (req, res) => {
+    spotifyApi.play().then(
+      function () {
+        console.log("Playback started");
+        res.json("Resumed Player")
+      },
+      function (err) {
+        //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
+        console.log("Something went wrong!", err);
+        res.json(err)
+      }
+    );
+  })
+
+  app.get("/api/pausePlayer", async (req, res) => {
+    spotifyApi.pause().then(
+      function () {
+        console.log("Playback paused");
+        res.json("Playback paused")
+      },
+      function (err) {
+        //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
+        console.log("Something went wrong!", err);
+        res.json(err)
+      }
+    );
+  })
+
+  app.get("/api/skipToNextTrack", async (req, res) => {
+    spotifyApi.skipToNext().then(
+      function () {
+        console.log("Skip to next");
+        res.json("Skipped To Next Track")
+      },
+      function (err) {
+        //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
+        console.log("Something went wrong!", err);
+      }
+    );
+  })
+
+  app.get("/api/skipToPreviousTrack", async (req, res) => {
+    spotifyApi.skipToPrevious().then(
+      function () {
+        console.log("Skip to previous");
+        res.json("Skipped To Previous Track")
+      },
+      function (err) {
+        //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
+        console.log("Something went wrong!", err);
+      }
+    );
+  })
+
+  app.get("/api/getCurrentPlayingTrackInfo", async (req, res) => {
+    res.json(spotifyApi.getMyCurrentPlayingTrack().then(
+      function (data) {
+        if (data.body.item === undefined) {
+          console.log("nothing is playing");
+          return null;
+        } else {
+          return {
+            name: data.body.item.name,
+            artist: data.body.item.artists[0].name,
+            imageURL: data.body.item.album.images[0].url,
+            id: data.body.item.id
+          };
+        }
+      },
+      function (err) {
+        console.log("Something went wrong!", err);
+      }
+    ))
+  })
+
+
+
 
   let port = process.env.PORT;
 
