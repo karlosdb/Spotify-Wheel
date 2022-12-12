@@ -28,7 +28,7 @@ window.onload = async (event) => {
 };
 
 let focusedPlaylistID = "";
-let selectedSong = "";
+const selectedSong = {};
 
 document.addEventListener(
   "mousedown",
@@ -110,18 +110,15 @@ document.getElementById("add-button").addEventListener("click", async () => {
 });
 
 document.getElementById("delete-button").addEventListener("click", async () => {
-    const res = await fetch("/api/get_currently_playing_track_info");
-    const songObj = await res.json();
-  
     await fetch("/api/remove_song", {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify([songObj.uri, focusedPlaylistID]),
+      body: JSON.stringify([selectedSong.uri, focusedPlaylistID]),
     });
-    const currentSong = document.getElementById(selectedSong)
+    const currentSong = document.getElementById(selectedSong.id);
     currentSong.parentNode.removeChild(currentSong);
 });
 
@@ -179,12 +176,12 @@ function renderSongs(songs) {
     element.id = song[3];
     element.addEventListener('click', async (e) => {
       for (const node of document.getElementById("playlist-songs").childNodes) {
-        if (node.id === selectedSong) {
+        if (node.id === selectedSong.id) {
           node.classList.toggle("selected");
         }
       }
-      selectedSong = song[3];
-      console.log(e.currentTarget);
+      selectedSong.id = song[3];
+      selectedSong.uri = song[4];
       e.currentTarget.classList.toggle("selected");  
       await fetch("/api/play_song", {
           method: "POST",

@@ -225,11 +225,23 @@ client.connect().then((db) => {
   });
 
   app.get("/api/get_songs/:playlist/", async (req, res) => {
-    spotifyApi.getPlaylist(req.params.playlist)
-      .then((data) => {
-        res.json(data.body.tracks.items.map((track) => {
-          return [track.track.name, track.track.track_number, track.track.album.uri, track.track.id];
-        }));
+    spotifyApi.getPlaylistTracks(req.params.playlist)
+      .then(async (data) => {
+        let next = data.body.next;
+        let songs = data.body.items.map((track) => {
+            return [track.track.name, track.track.track_number, track.track.album.uri, track.track.id, track.track.uri];
+          });
+        let offset = 0;
+        while (next) {
+          const new_songs = await spotifyApi.getPlaylistTracks(req.params.playlist, options={offset: offset+100});
+          songs = songs.concat(new_songs.body.items.map((track) => {
+            return [track.track.name, track.track.track_number, track.track.album.uri, track.track.id, track.track.uri];
+          }));
+          offset+=100;
+          next = new_songs.body.next;
+        }
+        console.log(songs.length);
+        res.json(songs.reverse());
       }, function(err) {
         console.log('Something went wrong!', err);
       });
