@@ -5,7 +5,7 @@ const express = require("express");
 const app = express();
 const minicrypt = require("./miniCrypt").MiniCrypt;
 
-const { spotifyApi, scopes } = require("./spotify");
+const { scopes } = require("./spotify");
 
 let userID;
 
@@ -64,6 +64,7 @@ app.use(express.json());
 
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
+const SpotifyWebApi = require("spotify-web-api-node");
 
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
@@ -156,8 +157,16 @@ client.connect().then((db) => {
     });
   });
 
+  let spotifyApi;
+
   // *** SPOTIFY ***
   app.get("/spotifyLogin", (req, res) => {
+    //console.log(`${req.protocol}://${req.headers.host}/callback`)
+    spotifyApi = new SpotifyWebApi({
+      clientId: '5bb105cf8e7a4b4dbd81c6db928df2c9',
+      clientSecret: '58a0ec2e824447f6bc21c77cc5956003',
+      redirectUri: `${req.protocol}://${req.headers.host}/callback`
+    });
     res.redirect(spotifyApi.createAuthorizeURL(scopes));
   });
 
