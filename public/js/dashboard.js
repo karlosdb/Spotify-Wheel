@@ -30,14 +30,6 @@ currentUrl = arr.join('/')
 
 console.log(currentUrl)
 
-// const accessToken = await getAcessToken();
-
-// async function getAcessToken() {
-//     const response = await fetch(`${currentUrl}/accessToken`);
-//     const data = await response.json();
-//     return data
-// }
-
 
 loadPlaylists()
 
@@ -81,17 +73,17 @@ document.getElementById('delete-button').addEventListener('click', async () => {
 async function loadPlaylists() {
     const response = await fetch('/api/playlists');
     const playlists = await response.json();
-
+    console.log(playlists);
     playlistsDiv.innerHTML = "";
     for (let i = 0; i < playlists.length; i++){
         const element = document.createElement('li')
         element.classList.add('list-group-item')
-        element.id = playlists[i][0];
+        element.id = playlists[i][1];
         element.innerHTML = playlists[i][0];
         element.addEventListener('click', async () => {
-            const response = await fetch(`${currentUrl}/api/get_songs/${playlists[i]}`);
+            const response = await fetch(`${currentUrl}/api/get_songs/${playlists[i][1]}`);
             const songs = await response.json();
-            document.getElementById('current-playlist').innerHTML = playlists[i];
+            document.getElementById('current-playlist').innerHTML = playlists[i][0];
             renderSongs(songs);
         })
         playlistsDiv.appendChild(element)

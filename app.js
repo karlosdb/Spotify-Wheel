@@ -151,7 +151,6 @@ client.connect().then((db) => {
   app.get("/callback", (req, res) => {
     const error = req.query.error;
     const code = req.query.code;
-
     if (error) {
       console.error("Callback Error:", error);
       res.send(`Callback Error: ${error}`);
@@ -161,30 +160,29 @@ client.connect().then((db) => {
     spotifyApi
       .authorizationCodeGrant(code)
       .then(async (data) => {
-        access_token = data.body["access_token"];
+        const access_token = data.body["access_token"];
         const refresh_token = data.body["refresh_token"];
         const expires_in = data.body["expires_in"];
 
-        console.log("access_token:", access_token);
-
         spotifyApi.setAccessToken(access_token);
         spotifyApi.setRefreshToken(refresh_token);
-        console.log(
-          `Sucessfully retreived access token. Expires in ${expires_in} s.`
-        );
 
-        res.redirect("/dashboard"); // after loggin in, redirect back to dashboard
+      console.log(
+        `Sucessfully retreived access token. Expires in ${expires_in} s.`
+      );
+      
+      res.redirect("/dashboard"); // after loggin in, redirect back to dashboard
 
-        setInterval(async () => {
-          const data = await spotifyApi.refreshAccessToken();
-          access_token = data.body["access_token"];
-          spotifyApi.setAccessToken(access_token);
-        }, (expires_in / 2) * 1000);
-      })
-      .catch((error) => {
-        console.error("Error getting Tokens:", error);
-        res.send(`Error getting Tokens: ${error}`);
-      });
+      setInterval(async () => {
+        const data = await spotifyApi.refreshAccessToken();
+        access_token = data.body["access_token"];
+        spotifyApi.setAccessToken(access_token);
+      }, (expires_in / 2) * 1000);
+    })
+    .catch((error) => {
+      console.error("Error getting Tokens:", error);
+      res.send(`Error getting Tokens: ${error}`);
+    });
   });
 
   // *** ROUTES ***
@@ -199,6 +197,26 @@ client.connect().then((db) => {
   app.get("/comments", checkAuthenticated, function (req, res, next) {
     res.sendFile(path.join(__dirname, "public/comments.html"));
   });
+  
+  app.get("/api/playlists", async (req, res) => {
+    await spotifyApi.getMe().then(async (data) => {
+      res.json((await spotifyApi.getUserPlaylists()).body.items
+        .filter((playlist) => playlist.owner.id === data.body.id)
+        .map((playlist) => {
+          return [playlist.name, playlist.id];
+        })
+      )
+    });
+  });
+
+  app.get("/api/get_songs/:playlist/", async (req, res) => {
+    spotifyApi.getPlaylist(req.params.playlist)
+      .then((data) => {
+        res.json(data.body.tracks.items.map((track) => track.track.name));
+      }, function(err) {
+        console.log('Something went wrong!', err);
+      });
+  })
 
   // *** API CALLS ***
   app.post("/api/save_comment", checkAuthenticated, async (req, res) => {
