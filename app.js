@@ -3,18 +3,13 @@ const data = require('./data')
 
 const express = require('express');
 const app = express();
-
-const SpotifyWebApi = require('spotify-web-api-node');
-const sp = require("./spotify");
-
 const minicrypt = require('./miniCrypt').MiniCrypt;
 
 const {spotifyApi, scopes} = require('./spotify');
-
+let userID;
 
 
 require("dotenv").config();
-
 
 // *** HELLA NICE HELPER FUNCTION ***
 const getMethods = (obj) => {
@@ -116,7 +111,7 @@ client.connect().then((db) => {
   passport.use(strategy);
 
   app.post("/login", passport.authenticate('local', {
-    successRedirect: "/dashboard",
+    successRedirect: "/spotifyLogin",
     failureRedirect: "/",
   }));
 
@@ -141,7 +136,7 @@ client.connect().then((db) => {
   }
 
   const checkLoggedIn = (req, res, next) => {
-    if (req.isAuthenticated()) return res.redirect("/dashboard");
+    if (req.isAuthenticated()) return res.redirect("/spotifyLogin");
     next();
   }
 
@@ -152,12 +147,6 @@ client.connect().then((db) => {
     });
  })
 
-
-  // *** SPOTIFY ***
-  app.get("/accessToken", (req, res) => {
-    res.json(sp.accessToken);
-  });
-
   app.get('/spotifyLogin', (req, res) => {
     res.redirect(spotifyApi.createAuthorizeURL(scopes));
   });
@@ -166,7 +155,6 @@ client.connect().then((db) => {
   app.get('/callback', (req, res) => {
     const error = req.query.error;
     const code = req.query.code;
-    const state = req.query.state;
 
       if (error) {
         console.error("Callback Error:", error);
@@ -174,18 +162,19 @@ client.connect().then((db) => {
         return;
       }
 
-      sp.spotifyApi
+      spotifyApi
         .authorizationCodeGrant(code)
-        .then((data) => {
-          const access_token = data.body["access_token"];
+        .then(async (data) => {
+          access_token = data.body["access_token"];
           const refresh_token = data.body["refresh_token"];
           const expires_in = data.body["expires_in"];
 
-          sp.spotifyApi.setAccessToken(access_token);
-          sp.spotifyApi.setRefreshToken(refresh_token);
-
-          console.log("access_token:", access_token);
-          console.log("refresh_token:", refresh_token);
+          spotifyApi.setAccessToken(access_token);
+          spotifyApi.setRefreshToken(refresh_token);
+          
+          await spotifyApi.getMe().then(function (data) {
+            userID = data.body.id;
+          });
 
           console.log(
             `Sucessfully retreived access token. Expires in ${expires_in} s.`
@@ -193,12 +182,9 @@ client.connect().then((db) => {
           res.redirect("/dashboard"); // after loggin in, redirect back to dashboard
 
       setInterval(async () => {
-        const data = await sp.spotifyApi.refreshAccessToken();
-        const access_token = data.body["access_token"];
-        //sp.accessToken = access_token; // set access token in spotify.js
-        console.log("The access token has been refreshed!");
-        console.log("access_token:", access_token);
-        sp.spotifyApi.setAccessToken(access_token);
+        const data = await spotifyApi.refreshAccessToken();
+        access_token = data.body["access_token"];
+        spotifyApi.setAccessToken(access_token);
       }, (expires_in / 2) * 1000);
       })
     .catch((error) => {
@@ -226,6 +212,17 @@ client.connect().then((db) => {
       .then((_) => res.json("saved comment"))
       .catch(console.err);
   });
+
+
+  app.get("/api/populate_playlists", async (req, res) => {
+    const data = await spotifyApi.getUserPlaylists(userID);
+    res.json(data.body.items
+      .filter((playlist) => playlist.owner.id === userID)
+      .map((playlist) => {
+        return [playlist.name, playlist.id];
+      })
+    );
+  })
 
 
   let port = process.env.PORT;
