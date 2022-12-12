@@ -213,6 +213,7 @@ function renderSongs(songs) {
           .getElementById("pause-circle-button")
           .classList.contains("hidden")
       ) {
+        console.log("toggled pause play");
         togglePausePlay();
       }
       await fetch("/api/play_song", {
