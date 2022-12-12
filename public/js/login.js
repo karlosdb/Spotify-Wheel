@@ -1,3 +1,13 @@
+window.onload = async (event) => {
+  fetch("/authenticated").then((data) => {
+    return data.json();
+  }).then((data) => {
+    console.log(window.location);
+    if (!data.authenticated && window.location.pathname !== '/') {
+      window.location.href = "/";
+    }
+  })
+};
 
 
 document.getElementById('submit-login').addEventListener('click', async (event) => {

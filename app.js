@@ -62,6 +62,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true })); // allow URLencoded data
 app.use(express.json());
 
+
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const client = new MongoClient(uri, {
@@ -126,8 +127,19 @@ client.connect().then((db) => {
     if (req.isAuthenticated()) {
       return next();
     }
-    res.redirect("/");
+    console.log(req.originalUrl);
+    console.log(req.hostname);
+    res.redirect('/');
   };
+
+  app.get("/authenticated", (req, res, next) => {
+    if (req.isAuthenticated()) {
+      res.json({authenticated: true});
+    }
+    else {
+      res.json({authenticated: false});
+    }
+  });
 
   const checkLoggedIn = (req, res, next) => {
     if (req.isAuthenticated()) return res.redirect("/spotifyLogin");
@@ -214,7 +226,7 @@ client.connect().then((db) => {
     spotifyApi.getPlaylist(req.params.playlist)
       .then((data) => {
         res.json(data.body.tracks.items.map((track) => {
-          return [track.track.name, track.track.track_number, track.track.album.uri];
+          return [track.track.name, track.track.track_number, track.track.album.uri, track.track.id];
         }));
       }, function(err) {
         console.log('Something went wrong!', err);
@@ -235,12 +247,7 @@ client.connect().then((db) => {
     res.json(await db.collection("comments").find({ song_id }).toArray());
   });
 
-  app.get("/api/get_playlists", checkAuthenticated, async (req, res) => {
-    const ID = (await spotifyApi.getMe()).body.id
-    spotifyApi.getUserPlaylists().then(response => response.body.items).then(playlists => {
-      res.json(playlists.filter(playlist => playlist.owner.id === ID))
-    })
-  });
+
 
 
   // *** SPOTIFY HELPERS ***
@@ -276,7 +283,6 @@ client.connect().then((db) => {
     const [album, offset] = req.body;
     spotifyApi.play({"context_uri": album, "offset": {"position": offset-1}}).then(
       function () {
-        console.log("Playback started");
         res.json("Resumed Player")
       },
       function (err) {
@@ -290,7 +296,6 @@ client.connect().then((db) => {
   app.get("/api/resume_player", async (req, res) => {
     spotifyApi.play().then(
       function () {
-        console.log("Playback started");
         res.json("Resumed Player")
       },
       function (err) {
@@ -304,7 +309,6 @@ client.connect().then((db) => {
   app.get("/api/pause_player", async (req, res) => {
     spotifyApi.pause().then(
       function () {
-        console.log("Playback paused");
         res.json("Playback paused")
       },
       function (err) {
@@ -351,6 +355,7 @@ client.connect().then((db) => {
           return {
             name: data.body.item.name,
             artist: data.body.item.artists[0].name,
+            album: data.body.item.album,
             imageURL: data.body.item.album.images[0].url,
             uri: data.body.item.uri
           };
@@ -360,6 +365,12 @@ client.connect().then((db) => {
         console.log("Something went wrong!", err);
       }
     ))
+  });
+
+  app.post("/api/get_player_status", async (req, res) => {
+    res.json(await spotifyApi.getMyCurrentPlaybackState().then((data) => {
+      return {"is_playing": (data.body && data.body.is_playing)};
+    }));
   })
 
 

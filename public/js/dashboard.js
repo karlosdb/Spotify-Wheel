@@ -8,7 +8,22 @@
 //   "BQB0q4fBd2hbRuB0RcEGo_qVKB2-4uB4q0Z5dGAuayuw9NpM3LCHohD6-spQm0Z-KGSjnxER75j8ZAJaBo6ef_se30DkFLmSaiOAld-O8ZpQN1G25Bm8Czvkqwer5WvwYyYzIrZazz1rdPytWkxofrVaI8GqdmAEmXHpMuawF579AQVgywyvNl1_DZan65SJQhEfknErYhDTAhgjDULCEClgDaBRDROaNEL0Ec_oMMNZ8BHMqqaoyrBdE5b34TK6p0qNdHQPxPyV50QZHwaMzCdRoM3oRpuiU_BDm5KNXraYJ2Y6gX8RIAzJEamK6KOjTyY";
 // const spotifyApi = new SpotifyWebApi();
 
+
+window.onload = async (event) => {
+  fetch("/authenticated").then((data) => {
+    return data.json();
+  }).then((data) => {
+    if (!data.authenticated) {
+      window.location.href = "/";
+    }
+    else {
+      loadPlaylists();
+    }
+  })
+};
+
 let focusedPlaylistID = "";
+let selectedSong = "";
 
 document.addEventListener(
   "mousedown",
@@ -25,8 +40,22 @@ document.getElementById("logout-button").addEventListener("click", (event) => {
   window.location.href = "/logout";
 });
 
-document.getElementById("comment-button").addEventListener("click", () => {
-  window.location.href = "/comments";
+document.getElementById("comment-button").addEventListener("click", async () => {
+  event.preventDefault();
+  const response = await fetch("/api/get_player_status", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  });
+  const data = response.json();
+  if (data.is_playing) {
+    window.location.href = "/comments";
+  }
+  else {
+    alert("not currently playing song");
+  }
 });
 
 const playlistsDiv = document.getElementById("user-playlists");
@@ -35,8 +64,6 @@ function togglePausePlay() {
   document.getElementById("play-circle-button").classList.toggle("hidden");
   document.getElementById("pause-circle-button").classList.toggle("hidden");
 }
-
-loadPlaylists();
 
 document
   .getElementById("skip-back-button")
@@ -155,13 +182,14 @@ function renderSongs(songs) {
     element.innerHTML = song[0];
     element.addEventListener('click', async () => {
         await fetch("/api/play_song", {
-            method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify([song[2], song[1]]),
-          });
+          method: "POST",
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify([song[2], song[1]]),
+        });
+        selectedSong = song[3];
     })
     songList.appendChild(element);
   }
