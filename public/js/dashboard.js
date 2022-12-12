@@ -11,9 +11,6 @@
 document.addEventListener('mousedown', function(event) {
     if (event.detail > 1) {
       event.preventDefault();
-      // of course, you still do not know what you prevent here...
-      // You could also check event.ctrlKey/event.shiftKey/event.altKey
-      // to not prevent something useful.
     }
   }, false);
 
@@ -42,19 +39,13 @@ console.log(currentUrl)
 
 loadPlaylists()
 
-document.getElementById('play-button').addEventListener('click', async () => {
-    const response = await fetch(`${currentUrl}/api/resume_player`);
-    const data = await response.json();
-    console.log(data);
-})
-
 document.getElementById('skip-back-button').addEventListener('click', async () => {
     const response = await fetch(`${currentUrl}/api/skip_to_previous_track`);
     const data = await response.json();
     console.log(data);
 })
 
-document.getElementById('skip-foreward-button').addEventListener('click', async () => {
+document.getElementById('skip-forward-button').addEventListener('click', async () => {
     const response = await fetch(`${currentUrl}/api/skip_to_next_track`);
     const data = await response.json();
     console.log(data);
@@ -81,11 +72,15 @@ document.getElementById('delete-button').addEventListener('click', async () => {
 document.getElementById('play-circle-button').addEventListener('click', async () => {
     document.getElementById('play-circle-button').classList.toggle('hidden');
     document.getElementById('pause-circle-button').classList.toggle('hidden');
+    const response = await fetch('/api/resume_player');
+    const data = await response.json();
 })
 
 document.getElementById('pause-circle-button').addEventListener('click', async () => {
     document.getElementById('play-circle-button').classList.toggle('hidden');
     document.getElementById('pause-circle-button').classList.toggle('hidden');
+    const response = await fetch('/api/pause_player');
+    const data = await response.json();
 })
 
 async function loadPlaylists() {
