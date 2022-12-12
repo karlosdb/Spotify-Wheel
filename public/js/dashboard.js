@@ -131,7 +131,7 @@ document.getElementById("add-button").addEventListener("click", async () => {
     });
     })
     const songList = document.getElementById('playlist-songs');
-    songList.appendChild(element);
+    songList.prepend(element);
 });
 
 document.getElementById("delete-button").addEventListener("click", async () => {
