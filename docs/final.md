@@ -75,7 +75,7 @@ GET /api/get_currently_playing_track_info: returns the currently playing songs i
 
 Authentication: We authenticate users by storing their username, hashed password, and salt in our database. Whenever a user creates an account, we compute a hash of their password using a salt and store the information. When logging in, we will make a POST request to our endpoint with the username and password. We will find the document with the user's username, and use our hashing function with the stored salt to see if the passwords match. If they are, they are successfully authenticated, otherwise they will be denied and have to try again to login. This authentication allows them to connect their spotify and access their dashboard along with all the playlists and controls.
 
-Division of labor: 
+Division of labor:\ 
 Shuby: Authentication and setting up the database\
 Kevin: Responsible for frontend/backend interactions and user experience\
 Karlos: API connections and connecting the application with spotify controls and content.\
