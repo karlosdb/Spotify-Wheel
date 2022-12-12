@@ -1,5 +1,3 @@
-IMMEDIATELY INVOKED FUNCTION CALL
-
 Team Name: Upsilon App name: Spotify wheel Semester: Fall 2022
 
 Overview: Spotify wheel is a webapp that allows users to interface with their spotify account in a new innovative ways. It allows you to manipulate playlists in a more convenient fashion from the current playing song. It also lets you to be able to comment other people's songs and view any reviews left by other users. Our app is innovative because it provides more additions on top of the regular spotify features, giving users more options to interact not only with the app but also other people.
@@ -61,5 +59,7 @@ GET /api/get_currently_playing_track_info: returns the currently playing songs i
 Authentication: We authenticate users by storing their username, hashed password, and salt in our database. Whenever a user creates an account, we compute a hash of their password using a salt and store the information. When logging in, we will make a POST request to our endpoint with the username and password. We will find the document with the user's username, and use our hashing function with the stored salt to see if the passwords match. If they are, they are successfully authenticated, otherwise they will be denied and have to try again to login. This authentication allows them to connect their spotify and access their dashboard along with all the playlists and controls.
 
 Division of labor: Shuby: Authentication and setting up the database Kevin: Responsible for frontend/backend interactions and user experience Karlos: API connections and connecting it with spotify controls and content.
+
+...cyclone 
 
 Conclusion: We had a great experience creating this project! For all of us, it was our first time creating a full stack website so we got to learn many different things! Some of the things we had to learn while creating our website was collaboration with each other on github, successful authentication of users, and using external APIs. However, we did have some trouble with successfully storing and logging users in and interacting with the spotify API to do what we wanted it to do. So, before starting this project, if we researched the api earlier and learned/set up a dummy backend login, we would have been in a much better spot.
