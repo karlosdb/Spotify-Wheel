@@ -43,7 +43,6 @@ document.getElementById("logout-button").addEventListener("click", (event) => {
 document.getElementById("comment-button").addEventListener("click", async () => {
   event.preventDefault();
   const response = await fetch("/api/get_player_status");
-
   const data = await response.json();
   if (data.is_playing) {
     window.location.href = "/comments";

@@ -7,6 +7,7 @@ window.onload = async (event) => {
     }
     else {
       loadComments();
+      renderComments(['hello asdkl;fjasdjofhasd jkjasdkj sdoajf ikl;asdj ofsdjosdf joasj o;ajsdf ohasdiol anljkashl iojioasdfiol asdfh uiolashsdf ihasdilh lasduh flasuihasdfil hsdiol', 'bello']);
     }
   })
 };
@@ -32,6 +33,24 @@ async function loadComments() {
 
   // TODO: LOOP THROUGH COMMENTS AND ADD THEM TO THE PAGE
   console.log(commentsData);
+}
+
+
+
+// input a list of strings/comments
+function renderComments(comments){
+  const commentList = document.getElementById('comment-group')
+  for (const comment of comments){
+    const element = document.createElement("li");
+    element.classList.add("list-group-item");
+    element.classList.add("comment-item");
+    element.innerHTML = 
+    `<a class = "follow"> + </a>
+    <a> ${comment} </a>
+    <a class = "follow"> ❤ </a>`
+
+    commentList.appendChild(element)
+  }
 }
 
 let currentUrl = window.location.href
