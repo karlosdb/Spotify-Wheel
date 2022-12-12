@@ -227,12 +227,14 @@ client.connect().then((db) => {
   });
 
   // *** API CALLS ***
-  app.get("/api/save_comment", (req, res) => {
-    db.collection("users")
-      .insertOne({ user })
-      .then((_) => res.json("saved comment"))
+  app.post("/api/save_comment", checkAuthenticated, (req, res) => {
+    const {comment, song_id} = req.body.comment;
+    db.collection("comments").insertOne({comment, song_id, user: req.user})
+      .then((_) => res.status(200))
       .catch(console.err);
   });
+
+
 
   let port = process.env.PORT;
 
