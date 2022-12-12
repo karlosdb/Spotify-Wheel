@@ -121,6 +121,8 @@ document.getElementById("delete-button").addEventListener("click", async () => {
       },
       body: JSON.stringify([songObj.uri, focusedPlaylistID]),
     });
+    const currentSong = document.getElementById(selectedSong)
+    currentSong.parentNode.removeChild(currentSong);
 });
 
 document
@@ -149,10 +151,15 @@ async function loadPlaylists() {
     element.classList.add("list-group-item");
     element.id = playlists[i][1];
     element.innerHTML = playlists[i][0];
-    element.addEventListener("click", async () => {
+    element.addEventListener("click", async (e) => {
       //set focused playlist variable
+      for (const node of document.getElementById("user-playlists").childNodes) {
+        if (node.id === focusedPlaylistID) {
+          node.classList.toggle("selected");
+        }
+      }
       focusedPlaylistID = playlists[i][1];
-
+      e.currentTarget.classList.toggle("selected");
       const response = await fetch(`/api/get_songs/${playlists[i][1]}`);
       const songs = await response.json();
       document.getElementById("current-playlist").innerHTML = playlists[i][0];
@@ -169,16 +176,24 @@ function renderSongs(songs) {
     const element = document.createElement("li");
     element.classList.add("list-group-item");
     element.innerHTML = song[0];
-    element.addEventListener('click', async () => {
-        await fetch("/api/play_song", {
+    element.id = song[3];
+    element.addEventListener('click', async (e) => {
+      for (const node of document.getElementById("playlist-songs").childNodes) {
+        if (node.id === selectedSong) {
+          node.classList.toggle("selected");
+        }
+      }
+      selectedSong = song[3];
+      console.log(e.currentTarget);
+      e.currentTarget.classList.toggle("selected");  
+      await fetch("/api/play_song", {
           method: "POST",
           headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json'
           },
           body: JSON.stringify([song[2], song[1]]),
-        });
-        selectedSong = song[3];
+      });
     })
     songList.appendChild(element);
   }
