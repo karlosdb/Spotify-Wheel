@@ -156,7 +156,7 @@ form i {
 }
 
 .player-controls {
-  margin-right: 10em;
+  margin-right: 0.5em;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -168,6 +168,7 @@ form i {
   padding-right: 20px;
   justify-content: center;
   align-items: center;
+  width: 20%;
 }
 
 .buttons {
