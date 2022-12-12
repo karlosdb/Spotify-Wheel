@@ -155,7 +155,7 @@ function renderSongs(songs) {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify([song[1]]),
+            body: JSON.stringify([song[2], song[1]]),
           });
     })
     songList.appendChild(element);

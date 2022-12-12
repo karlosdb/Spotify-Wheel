@@ -213,7 +213,7 @@ client.connect().then((db) => {
   app.get("/api/get_songs/:playlist/", async (req, res) => {
     spotifyApi.getPlaylist(req.params.playlist)
       .then((data) => {
-        res.json(data.body.tracks.items.map((track) => [track.track.name, track.track.uri]));
+        res.json(data.body.tracks.items.map((track) => [track.track.name, track.track.track_number, track.track.album.uri]));
       }, function(err) {
         console.log('Something went wrong!', err);
       });
@@ -272,8 +272,8 @@ client.connect().then((db) => {
   })
   
   app.post("/api/play_song", async (req, res) => {
-    const [song_uri] = req.body;
-    spotifyApi.play({"uris": [song_uri]}).then(
+    const [album, offset] = req.body;
+    spotifyApi.play({"context_uri": album, "offset": offset}).then(
       function () {
         console.log("Playback started");
         res.json("Resumed Player")
