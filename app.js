@@ -168,9 +168,11 @@ client.connect().then((db) => {
         spotifyApi.setAccessToken(access_token);
         spotifyApi.setRefreshToken(refresh_token);
 
+
       console.log(
         `Sucessfully retreived access token. Expires in ${expires_in} s.`
       );
+
       
       res.redirect("/dashboard"); // after loggin in, redirect back to dashboard
 
@@ -198,7 +200,7 @@ client.connect().then((db) => {
   app.get("/comments", checkAuthenticated, function (req, res, next) {
     res.sendFile(path.join(__dirname, "public/comments.html"));
   });
-  
+
   app.get("/api/playlists", async (req, res) => {
     await spotifyApi.getMe().then(async (data) => {
       res.json((await spotifyApi.getUserPlaylists()).body.items
@@ -218,6 +220,8 @@ client.connect().then((db) => {
         console.log('Something went wrong!', err);
       });
   })
+
+  
 
   // *** API CALLS ***
   app.post("/api/save_comment", checkAuthenticated, async (req, res) => {
@@ -272,82 +276,35 @@ client.connect().then((db) => {
   })
   
   app.get("/api/resume_player", async (req, res) => {
-    spotifyApi.play().then(
-      function () {
-        console.log("Playback started");
-        res.json("Resumed Player")
-      },
-      function (err) {
-        //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
-        console.log("Something went wrong!", err);
-        res.json(err)
-      }
-    );
+    spotifyApi.play().then((_) => res.json("Resumed Player")).catch(console.err);
   })
 
   app.get("/api/pause_player", async (req, res) => {
-    spotifyApi.pause().then(
-      function () {
-        console.log("Playback paused");
-        res.json("Playback paused")
-      },
-      function (err) {
-        //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
-        console.log("Something went wrong!", err);
-        res.json(err)
-      }
-    );
+    spotifyApi.pause().then((_) => res.json("Paused Player")).catch(console.err);
   })
 
   app.get("/api/skip_to_next_track", async (req, res) => {
-    spotifyApi.skipToNext().then(
-      function () {
-        console.log("Skip to next");
-        res.json("Skipped To Next Track")
-      },
-      function (err) {
-        //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
-        console.log("Something went wrong!", err);
-      }
-    );
+    spotifyApi.skipToNext().then((_) => res.json("Skipped To Next Track")).catch(console.err);
   })
 
   app.get("/api/skip_to_previous_track", async (req, res) => {
-    spotifyApi.skipToPrevious().then(
-      function () {
-        console.log("Skip to previous");
-        res.json("Skipped To Previous Track")
-      },
-      function (err) {
-        //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
-        console.log("Something went wrong!", err);
-      }
-    );
+    spotifyApi.skipToPrevious().then((_) => res.json("Skipped To Previous Track")).catch(console.err);
   })
 
-  app.get("/api/get_currently_playing_track_info", async (req, res) => {
-    res.json(await spotifyApi.getMyCurrentPlayingTrack().then(
-      function (data) {
-        if (data.body.item === undefined) {
-          console.log("nothing is playing");
-          return null;
-        } else {
-          return {
-            name: data.body.item.name,
-            artist: data.body.item.artists[0].name,
-            imageURL: data.body.item.album.images[0].url,
-            uri: data.body.item.uri
-          };
-        }
-      },
-      function (err) {
-        console.log("Something went wrong!", err);
+  app.get("/api/get_currently_playing_track_info", (req, res) => {
+    spotifyApi.getMyCurrentPlayingTrack().then(data => {
+      if (data.body.item === undefined) {
+        res.json({ name: "No Song Playing", artist: "", imageURL: "", uri: "" })
+      } else {
+        res.json({
+          name: data.body.item.name,
+          artist: data.body.item.artists[0].name,
+          imageURL: data.body.item.album.images[0].url,
+          uri: data.body.item.uri
+        });
       }
-    ))
+    }).catch(console.err);
   })
-
-
-
 
   let port = process.env.PORT;
 
