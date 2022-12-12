@@ -46,14 +46,17 @@ loadPlaylists()
 document.getElementById('skip-back-button').addEventListener('click', async () => {
     const response = await fetch('/api/skip_to_previous_track');
     const data = await response.json();
-    console.log(data);
-    togglePausePlay();
+    document.getElementById('play-circle-button').setAttribute("class", "");
+    document.getElementById('play-circle-button').classList.add('hidden');
+    document.getElementById('pause-circle-button').setAttribute("class", "");
 })
 
 document.getElementById('skip-forward-button').addEventListener('click', async () => {
     const response = await fetch('/api/skip_to_next_track');
     const data = await response.json();
-    togglePausePlay();
+    document.getElementById('play-circle-button').setAttribute("class", "");
+    document.getElementById('play-circle-button').classList.add('hidden');
+    document.getElementById('pause-circle-button').setAttribute("class", "");
     console.log(data);
 })
 
@@ -106,25 +109,6 @@ async function loadPlaylists() {
         playlistsDiv.appendChild(element)
     }
 }
-
-
-const firstPlaylistDiv = document.getElementById('2 Cool 4 Skool')
-
-
-// async function loadSongs(){
-//     console.log('FAT')
-//     const response = await fetch(currentUrl + '/api/songs')
-//     const songs = await response.json();
-
-//     for (let i = 0; i < songs.length; i++){
-//         const element = document.createElement('li')
-//         element.classList.add('list-group-item')
-//         element.innerHTML = songs[i]
-
-//         firstPlaylistDiv.appendChild(element)
-//     }
-
-// }
 
 function renderSongs(songs) {
     console.log(songs);
