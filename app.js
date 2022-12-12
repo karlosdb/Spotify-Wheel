@@ -62,6 +62,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true })); // allow URLencoded data
 app.use(express.json());
 
+
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const client = new MongoClient(uri, {
@@ -126,8 +127,19 @@ client.connect().then((db) => {
     if (req.isAuthenticated()) {
       return next();
     }
-    res.redirect("/");
+    console.log(req.originalUrl);
+    console.log(req.hostname);
+    res.redirect('/');
   };
+
+  app.get("/authenticated", (req, res, next) => {
+    if (req.isAuthenticated()) {
+      res.json({authenticated: true});
+    }
+    else {
+      res.json({authenticated: false});
+    }
+  });
 
   const checkLoggedIn = (req, res, next) => {
     if (req.isAuthenticated()) return res.redirect("/spotifyLogin");
@@ -215,7 +227,9 @@ client.connect().then((db) => {
   app.get("/api/get_songs/:playlist/", async (req, res) => {
     spotifyApi.getPlaylist(req.params.playlist)
       .then((data) => {
-        res.json(data.body.tracks.items.map((track) => track.track.name));
+        res.json(data.body.tracks.items.map((track) => {
+          return [track.track.name, track.track.track_number, track.track.album.uri, track.track.id];
+        }));
       }, function(err) {
         console.log('Something went wrong!', err);
       });
@@ -237,29 +251,23 @@ client.connect().then((db) => {
     res.json(await db.collection("comments").find({ song_id }).toArray());
   });
 
-  app.get("/api/get_playlists", checkAuthenticated, async (req, res) => {
-    const ID = (await spotifyApi.getMe()).body.id
-    spotifyApi.getUserPlaylists().then(response => response.body.items).then(playlists => {
-      res.json(playlists.filter(playlist => playlist.owner.id === ID))
-    })
-  });
+
 
 
   // *** SPOTIFY HELPERS ***
   const remove_song = async (song_id, playlist_id) => {
-    await spotifyApi.removeTracksFromPlaylist(playlist_id, [{ uri: song_id }]).then(() => {
-      res.sendStatus(200);
-    }).catch(console.err);
+    await spotifyApi.removeTracksFromPlaylist(playlist_id, [{ uri: song_id }]).then(() => {}).catch(console.err);
   }
 
   const add_song = async (song_id, playlist_id) => {
     await spotifyApi.addTracksToPlaylist(playlist_id, [song_id]).then(() => {}).catch(console.err);
   }
 
-  app.post("api/remove_song", checkAuthenticated, async (req, res) => {
-    const { song_id, playlist_id } = req.body;
+  app.post("/api/remove_song", checkAuthenticated, async (req, res) => {
+    const [song_id, playlist_id ] = req.body;
+    console.log(song_id, playlist_id, 'THIS IS THE POST ')
     await remove_song(song_id, playlist_id);
-    res.send(200)
+    res.send(200);
   })
 
   app.post("/api/add_song", checkAuthenticated, async (req, res) => {
@@ -275,6 +283,20 @@ client.connect().then((db) => {
     res.send(200);
   })
   
+  app.post("/api/play_song", async (req, res) => {
+    const [album, offset] = req.body;
+    spotifyApi.play({"context_uri": album, "offset": {"position": offset-1}}).then(
+      function () {
+        res.json("Resumed Player")
+      },
+      function (err) {
+        //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
+        console.log("Something went wrong!", err);
+        res.json(err)
+      }
+    );
+  })
+
   app.get("/api/resume_player", async (req, res) => {
     spotifyApi.play().then((_) => res.json("Resumed Player")).catch(console.err);
   })
@@ -291,19 +313,32 @@ client.connect().then((db) => {
     spotifyApi.skipToPrevious().then((_) => res.json("Skipped To Previous Track")).catch(console.err);
   })
 
-  app.get("/api/get_currently_playing_track_info", (req, res) => {
-    spotifyApi.getMyCurrentPlayingTrack().then(data => {
-      if (data.body.item === undefined) {
-        res.json({ name: "No Song Playing", artist: "", imageURL: "", uri: "" })
-      } else {
-        res.json({
-          name: data.body.item.name,
-          artist: data.body.item.artists[0].name,
-          imageURL: data.body.item.album.images[0].url,
-          uri: data.body.item.uri
-        });
+  app.get("/api/get_currently_playing_track_info", async (req, res) => {
+    res.json(await spotifyApi.getMyCurrentPlayingTrack().then(
+      function (data) {
+        if (data.body.item === undefined) {
+          console.log("nothing is playing");
+          return null;
+        } else {
+          return {
+            name: data.body.item.name,
+            artist: data.body.item.artists[0].name,
+            album: data.body.item.album,
+            imageURL: data.body.item.album.images[0].url,
+            uri: data.body.item.uri
+          };
+        }
+      },
+      function (err) {
+        console.log("Something went wrong!", err);
       }
-    }).catch(console.err);
+    ))
+  });
+
+  app.post("/api/get_player_status", async (req, res) => {
+    res.json(await spotifyApi.getMyCurrentPlaybackState().then((data) => {
+      return {"is_playing": (data.body && data.body.is_playing)};
+    }));
   })
 
   let port = process.env.PORT;
