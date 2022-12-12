@@ -328,7 +328,6 @@ client.connect().then((db) => {
 
   app.get("/api/get_currently_playing_track_info", async (req, res) => {
     res.json(await spotifyApi.getMyCurrentPlayingTrack().then(
-    res.json(await spotifyApi.getMyCurrentPlayingTrack().then(
       function (data) {
         if (data.body.item === undefined) {
           console.log("nothing is playing");
@@ -353,12 +352,6 @@ client.connect().then((db) => {
   });
 
   app.get("/api/get_player_status", (req, res) => {
-    // console.log("getting player status")
-    // res.json(await spotifyApi.getMyCurrentPlaybackState().then((data) => {
-    //   console.log(data.body)
-    //   return {"is_playing": (data.body && data.body.is_playing)};
-    // }));
-
     spotifyApi.getMyCurrentPlaybackState().then(data => {
       res.json({is_playing: (data.body && data.body.is_playing)});
     })
