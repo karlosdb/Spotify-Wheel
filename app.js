@@ -1,20 +1,18 @@
-const path = require('path');
-const data = require('./data')
+const path = require("path");
+const data = require("./data");
 
-const express = require('express');
+const express = require("express");
 const app = express();
+const cookieParser = require("cookie-parser");
 
-const SpotifyWebApi = require('spotify-web-api-node');
+const SpotifyWebApi = require("spotify-web-api-node");
 const sp = require("./spotify");
 
-const minicrypt = require('./miniCrypt').MiniCrypt;
+const minicrypt = require("./miniCrypt").MiniCrypt;
 
-const {spotifyApi, scopes} = require('./spotify');
-
-
+const { spotifyApi, scopes } = require("./spotify");
 
 require("dotenv").config();
-
 
 // *** HELLA NICE HELPER FUNCTION ***
 const getMethods = (obj) => {
@@ -28,8 +26,6 @@ const getMethods = (obj) => {
   );
 };
 
-
-
 let secrets;
 let uri;
 
@@ -40,38 +36,38 @@ if (!process.env.URI) {
   uri = process.env.URI;
 }
 
-
-
 // *** PASSPORT ***
 const passport = require("passport");
 const session = require("express-session");
 passport.serializeUser((user, done) => {
-    done(null, user);
+  done(null, user);
 });
 passport.deserializeUser((uid, done) => {
-    done(null, uid);
+  done(null, uid);
 });
 
 // how we authenticate users
-const LocalStrategy = require('passport-local').Strategy; 
-
+const LocalStrategy = require("passport-local").Strategy;
 
 // *** APP SETUP ***
-app.use(session({
-  secret: process.env.SECRET || 'SECRET',
-  resave: false,
-  saveUninitialized: false,
-}));
+app.use(
+  session({
+    secret: process.env.SECRET || "SECRET",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.urlencoded({'extended' : true})); // allow URLencoded data
+app.use(express.urlencoded({ extended: true })); // allow URLencoded data
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+app.use(cookieParser());
 
+const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
@@ -84,128 +80,138 @@ client.connect().then((db) => {
   const mc = new minicrypt();
 
 
-  //*** DB HELPERS *** 
+  //*** DB HELPERS ***
   const addUser = async (username, password) => {
     if (await findUser(username)) return false;
     const [salt, hash] = mc.hash(password);
     const users = db.collection("users");
     return await users.insertOne({ username, salt, hash });
-  }
+  };
 
   const findUser = async (username) => {
     const users = db.collection("users");
-    return await users.findOne({username: username});
-  }
+    return await users.findOne({ username: username });
+  };
 
   // *** PASSPORT and LOGIN and USER CREATION ***
-  const strategy = new LocalStrategy(
-    async (username, password, done) => {
-      const found = await findUser(username);
+  const strategy = new LocalStrategy(async (username, password, done) => {
+    const found = await findUser(username);
 
-      if (!found || !mc.check(password, found.salt, found.hash)) {
-        await new Promise((r) => setTimeout(r, 1000)); 
-        return done(null, false, { message: "Wrong username or password" });
-      } 
-
-      done(null, username);
+    if (!found || !mc.check(password, found.salt, found.hash)) {
+      await new Promise((r) => setTimeout(r, 1000));
+      return done(null, false, { message: "Wrong username or password" });
     }
-  );
 
+    done(null, username);
+  });
 
   // no idea if you're suppposed to do this here
   passport.use(strategy);
 
-  app.post("/login", passport.authenticate('local', {
-    successRedirect: "/dashboard",
-    failureRedirect: "/",
-  }));
-
-
+  app.post(
+    "/login",
+    passport.authenticate("local", {
+      successRedirect: "/spotifyLogin",
+      failureRedirect: "/",
+    })
+  );
 
   app.post("/api/checkUsername", async (req, res) => {
     const { username } = req.body;
-    res.json({success: await findUser(username) == null});
+    res.json({ success: (await findUser(username)) == null });
   });
-
 
   app.post("/register", async (req, res) => {
     const { username, password } = req.body;
     if (await addUser(username, password)) {
       res.redirect("/");
-    } 
+    }
   });
 
   const checkAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated()) { return next() }
-    res.redirect("/")
-  }
+    if (req.isAuthenticated()) {
+      return next();
+    }
+    res.redirect("/");
+  };
 
   const checkLoggedIn = (req, res, next) => {
     if (req.isAuthenticated()) return res.redirect("/dashboard");
     next();
-  }
+  };
 
-  app.get("/logout", checkLoggedIn, (req,res) => {
+  app.get("/logout", checkLoggedIn, (req, res) => {
     req.logout((err) => {
-      if (err) { return next(err); }
-      res.redirect('/');
+      if (err) {
+        return next(err);
+      }
+      res.redirect("/");
     });
- })
-
-
-  // *** SPOTIFY ***
-  app.get("/accessToken", (req, res) => {
-    res.json(sp.accessToken);
   });
 
-  app.get('/spotifyLogin', (req, res) => {
+  // *** SPOTIFY ***
+  app.get("/spotifyLogin", (req, res) => {
     res.redirect(spotifyApi.createAuthorizeURL(scopes));
   });
 
-  
-  app.get('/callback', (req, res) => {
+  app.get("/callback", (req, res) => {
     const error = req.query.error;
     const code = req.query.code;
     const state = req.query.state;
 
-      if (error) {
-        console.error("Callback Error:", error);
-        res.send(`Callback Error: ${error}`);
-        return;
-      }
+    if (error) {
+      console.error("Callback Error:", error);
+      res.send(`Callback Error: ${error}`);
+      return;
+    }
 
-      sp.spotifyApi
-        .authorizationCodeGrant(code)
-        .then((data) => {
-          const access_token = data.body["access_token"];
-          const refresh_token = data.body["refresh_token"];
-          const expires_in = data.body["expires_in"];
-
-          sp.spotifyApi.setAccessToken(access_token);
-          sp.spotifyApi.setRefreshToken(refresh_token);
-
-          console.log("access_token:", access_token);
-          console.log("refresh_token:", refresh_token);
-
-          console.log(
-            `Sucessfully retreived access token. Expires in ${expires_in} s.`
-          );
-          res.redirect("/dashboard"); // after loggin in, redirect back to dashboard
-
-      setInterval(async () => {
-        const data = await sp.spotifyApi.refreshAccessToken();
+    spotifyApi
+      .authorizationCodeGrant(code)
+      .then((data) => {
         const access_token = data.body["access_token"];
-        //sp.accessToken = access_token; // set access token in spotify.js
-        console.log("The access token has been refreshed!");
+        const refresh_token = data.body["refresh_token"];
+        const expires_in = data.body["expires_in"];
+
+        spotifyApi.setAccessToken(access_token);
+        spotifyApi.setRefreshToken(refresh_token);
+
         console.log("access_token:", access_token);
-        sp.spotifyApi.setAccessToken(access_token);
-      }, (expires_in / 2) * 1000);
+        console.log("refresh_token:", refresh_token);
+
+        res.cookie("access_token", access_token, {
+          maxAge: 1000 * expires_in,
+          httpOnly: true,
+          overwrite: true,
+        });
+
+        console.log(
+          `Sucessfully retreived access token. Expires in ${expires_in} s.`
+        );
+
+        res.redirect("/dashboard"); // after loggin in, redirect back to dashboard
+
+        setInterval(async () => {
+          const data = await sp.spotifyApi.refreshAccessToken();
+          const access_token = data.body["access_token"];
+          //sp.accessToken = access_token; // set access token in spotify.js
+          console.log("The access token has been refreshed!");
+          console.log("access_token:", access_token);
+          sp.spotifyApi.setAccessToken(access_token);
+          res.cookie("access_token", access_token, {
+            maxAge: 1000 * expires_in,
+            httpOnly: true,
+            overwrite: true,
+          });
+        }, (expires_in / 2) * 1000);
       })
-    .catch((error) => {
-      console.error("Error getting Tokens:", error);
-      res.send(`Error getting Tokens: ${error}`);
-    });
+      .catch((error) => {
+        console.error("Error getting Tokens:", error);
+        res.send(`Error getting Tokens: ${error}`);
+      });
   });
+
+
+  
 
   // *** ROUTES ***
   app.get("/", checkLoggedIn, function (req, res, next) {
@@ -222,13 +228,14 @@ client.connect().then((db) => {
 
   // *** API CALLS ***
   app.get("/api/save_comment", (req, res) => {
-    db.collection("users").insertOne({ user })
+    db.collection("users")
+      .insertOne({ user })
       .then((_) => res.json("saved comment"))
       .catch(console.err);
   });
 
-
   let port = process.env.PORT;
+
   if (port == null || port == "") {
     port = 8000;
   }
@@ -236,9 +243,6 @@ client.connect().then((db) => {
   app.listen(port, async () => {
     console.log(`Spotify Wheel listening on port ${port}`);
   });
-
 });
-
-
 
 module.exports = app;
