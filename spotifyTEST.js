@@ -125,6 +125,7 @@ async function getCurrentPlayingSongInfo() {
           name: data.body.item.name,
           artist: data.body.item.artists[0].name,
           imageURL: data.body.item.album.images[0].url,
+          id: data.body.item
         };
       }
     },
