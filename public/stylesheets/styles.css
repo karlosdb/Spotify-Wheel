@@ -117,7 +117,9 @@ form i {
 }
 
 .column-header {
-  margin-top: 50px;
+  padding-top: 50px;
+  height: 10%;
+  margin-bottom: 0;
 }
 
 .list-group{
@@ -125,7 +127,7 @@ form i {
   overflow:scroll;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  max-height: 92%;
+  max-height: 90%;
 }
 
 .list-group-item {
