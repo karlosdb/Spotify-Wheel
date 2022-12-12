@@ -14,9 +14,6 @@ const minicrypt = require('./miniCrypt').MiniCrypt;
 require("dotenv").config();
 
 
-
-
-
 // *** HELLA NICE HELPER FUNCTION ***
 const getMethods = (obj) => {
   let properties = new Set();
@@ -87,19 +84,15 @@ client.connect().then((db) => {
 
   //*** DB HELPERS *** 
   const addUser = async (username, password) => {
-
-    if (await findUser(username)) {
-      return false;
-    };
+    if (await findUser(username)) return false;
     const [salt, hash] = mc.hash(password);
     const users = db.collection("users");
-    await users.insertOne({ username, salt, hash });
-    return true;
+    return await users.insertOne({ username, salt, hash });
   }
 
   const findUser = async (username) => {
     const users = db.collection("users");
-    return await users.findOne({username: username}) != null;
+    return await users.findOne({username: username});
   }
 
   // *** PASSPORT and LOGIN and USER CREATION ***
@@ -108,7 +101,7 @@ client.connect().then((db) => {
       const found = await findUser(username);
 
       if (!found || !mc.check(password, found.salt, found.hash)) {
-        await new Promise((r) => setTimeout(r, 2000)); // two second delay
+        await new Promise((r) => setTimeout(r, 1000)); 
         return done(null, false, { message: "Wrong username or password" });
       } 
 
@@ -126,12 +119,14 @@ client.connect().then((db) => {
   }));
 
   app.post("/register", async (req, res) => {
+    console.log(req.body)
     const { username, password } = req.body;
+    if (findUser(username)) {
+      res.send("User already exists")
+    }
     if (await addUser(username, password)) {
-      res.redirect("/login");
-    } else {
       res.redirect("/");
-    };
+    } 
   });
 
   const checkAuthenticated = (req, res, next) => {
@@ -145,9 +140,8 @@ client.connect().then((db) => {
   }
 
   app.delete("/logout", (req,res) => {
-    req.logOut()
-    res.redirect("/login")
-    console.log(`-------> User Logged out`)
+    req.logout();
+    res.redirect("/");
  })
 
 
@@ -194,7 +188,6 @@ client.connect().then((db) => {
         const data = await sp.spotifyApi.refreshAccessToken();
         const access_token = data.body["access_token"];
         //sp.accessToken = access_token; // set access token in spotify.js
-
         console.log("The access token has been refreshed!");
         console.log("access_token:", access_token);
         sp.spotifyApi.setAccessToken(access_token);
