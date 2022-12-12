@@ -87,9 +87,14 @@ client.connect().then((db) => {
 
   //*** DB HELPERS *** 
   const addUser = async (username, password) => {
+
+    if (await findUser(username)) {
+      return false;
+    };
     const [salt, hash] = mc.hash(password);
     const users = db.collection("users");
     await users.insertOne({ username, salt, hash });
+    return true;
   }
 
   const findUser = async (username) => {
@@ -120,6 +125,15 @@ client.connect().then((db) => {
     failureRedirect: "/",
   }));
 
+  app.post("/register", async (req, res) => {
+    const { username, password } = req.body;
+    if (await addUser(username, password)) {
+      res.redirect("/login");
+    } else {
+      res.redirect("/");
+    };
+  });
+
   const checkAuthenticated = (req, res, next) => {
     if (req.isAuthenticated()) { return next() }
     res.redirect("/")
@@ -135,6 +149,7 @@ client.connect().then((db) => {
     res.redirect("/login")
     console.log(`-------> User Logged out`)
  })
+
 
   // *** SPOTIFY ***
   app.get("/accessToken", (req, res) => {
@@ -200,7 +215,6 @@ client.connect().then((db) => {
     res.sendFile(path.join(__dirname, "public/dashboard.html"));
   });
 
-
   app.get("/comments", checkAuthenticated, function (req, res, next) {
     res.sendFile(path.join(__dirname, "public/comments.html"));
   });
@@ -211,7 +225,6 @@ client.connect().then((db) => {
       .then((_) => res.json("saved comment"))
       .catch(console.err);
   });
-
 
 
   let port = process.env.PORT;
