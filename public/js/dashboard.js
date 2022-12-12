@@ -130,6 +130,7 @@ document.getElementById("add-button").addEventListener("click", async () => {
         body: JSON.stringify([songObj.album_uri, songObj.track_number]),
     });
     })
+    const songList = document.getElementById('playlist-songs');
     songList.appendChild(element);
 });
 
