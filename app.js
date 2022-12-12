@@ -3,11 +3,11 @@ const data = require("./data");
 
 const express = require("express");
 const app = express();
-const minicrypt = require('./miniCrypt').MiniCrypt;
+const minicrypt = require("./miniCrypt").MiniCrypt;
 
-const {spotifyApi, scopes} = require('./spotify');
+const { spotifyApi, scopes } = require("./spotify");
+
 let userID;
-
 
 require("dotenv").config();
 
@@ -62,7 +62,6 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true })); // allow URLencoded data
 app.use(express.json());
 
-
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const client = new MongoClient(uri, {
@@ -74,7 +73,6 @@ const client = new MongoClient(uri, {
 client.connect().then((db) => {
   db = db.db("db");
   const mc = new minicrypt();
-
 
   //*** DB HELPERS ***
   const addUser = async (username, password) => {
@@ -104,12 +102,13 @@ client.connect().then((db) => {
   // no idea if you're suppposed to do this here
   passport.use(strategy);
 
-  app.post("/login", passport.authenticate('local', {
-    successRedirect: "/spotifyLogin",
-    failureRedirect: "/",
-  }));
-
-
+  app.post(
+    "/login",
+    passport.authenticate("local", {
+      successRedirect: "/spotifyLogin",
+      failureRedirect: "/",
+    })
+  );
 
   app.post("/api/checkUsername", async (req, res) => {
     const { username } = req.body;
@@ -187,9 +186,6 @@ client.connect().then((db) => {
     });
   });
 
-
-  
-
   // *** ROUTES ***
   app.get("/", checkLoggedIn, function (req, res, next) {
     res.sendFile(path.join(__dirname, "public/login.html"));
@@ -224,12 +220,94 @@ client.connect().then((db) => {
   })
 
   // *** API CALLS ***
-  app.get("/api/save_comment", (req, res) => {
-    db.collection("users")
-      .insertOne({ user })
-      .then((_) => res.json("saved comment"))
+  app.post("/api/save_comment", checkAuthenticated, async (req, res) => {
+    const { comment, song_id } = req.body.comment;
+    db.collection("comments")
+      .insertOne({ comment, song_id, user: req.user })
+      .then((_) => res.status(200))
       .catch(console.err);
   });
+
+  app.post("/api/get_comments", checkAuthenticated, async (req, res) => {
+    const { song_id } = req.body;
+    res.json(await db.collection("comments").find({ song_id }).toArray());
+  });
+
+  app.get("/api/resumePlayer", async (req, res) => {
+    spotifyApi.play().then(
+      function () {
+        console.log("Playback started");
+        res.json("Resumed Player")
+      },
+      function (err) {
+        //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
+        console.log("Something went wrong!", err);
+        res.json(err)
+      }
+    );
+  })
+
+  app.get("/api/pausePlayer", async (req, res) => {
+    spotifyApi.pause().then(
+      function () {
+        console.log("Playback paused");
+        res.json("Playback paused")
+      },
+      function (err) {
+        //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
+        console.log("Something went wrong!", err);
+        res.json(err)
+      }
+    );
+  })
+
+  app.get("/api/skipToNextTrack", async (req, res) => {
+    spotifyApi.skipToNext().then(
+      function () {
+        console.log("Skip to next");
+        res.json("Skipped To Next Track")
+      },
+      function (err) {
+        //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
+        console.log("Something went wrong!", err);
+      }
+    );
+  })
+
+  app.get("/api/skipToPreviousTrack", async (req, res) => {
+    spotifyApi.skipToPrevious().then(
+      function () {
+        console.log("Skip to previous");
+        res.json("Skipped To Previous Track")
+      },
+      function (err) {
+        //if the user making the request is non-premium, a 403 FORBIDDEN response code will be returned
+        console.log("Something went wrong!", err);
+      }
+    );
+  })
+
+  app.get("/api/getCurrentPlayingTrackInfo", async (req, res) => {
+    res.json(spotifyApi.getMyCurrentPlayingTrack().then(
+      function (data) {
+        if (data.body.item === undefined) {
+          console.log("nothing is playing");
+          return null;
+        } else {
+          return {
+            name: data.body.item.name,
+            artist: data.body.item.artists[0].name,
+            imageURL: data.body.item.album.images[0].url,
+            id: data.body.item.id
+          };
+        }
+      },
+      function (err) {
+        console.log("Something went wrong!", err);
+      }
+    ))
+  })
+
 
 
 
