@@ -46,17 +46,17 @@ loadPlaylists()
 document.getElementById('skip-back-button').addEventListener('click', async () => {
     const response = await fetch('/api/skip_to_previous_track');
     const data = await response.json();
-    document.getElementById('play-circle-button').setAttribute("class", "");
-    document.getElementById('play-circle-button').classList.add('hidden');
-    document.getElementById('pause-circle-button').setAttribute("class", "");
+    if (document.getElementById('pause-circle-button').classList.contains('hidden')) {
+        togglePausePlay();
+    }
 })
 
 document.getElementById('skip-forward-button').addEventListener('click', async () => {
     const response = await fetch('/api/skip_to_next_track');
     const data = await response.json();
-    document.getElementById('play-circle-button').setAttribute("class", "");
-    document.getElementById('play-circle-button').classList.add('hidden');
-    document.getElementById('pause-circle-button').setAttribute("class", "");
+    if (document.getElementById('pause-circle-button').classList.contains('hidden')) {
+        togglePausePlay();
+    }
     console.log(data);
 })
 
@@ -67,13 +67,13 @@ document.getElementById('add-button').addEventListener('click', async () => {
 })
 
 document.getElementById('move-button').addEventListener('click', async () => {
-    const response = await fetch(`${currentUrl}/api/move_song`);
+    const response = await fetch('/api/move_song');
     const data = await response.json();
     console.log(data);
 })
 
 document.getElementById('delete-button').addEventListener('click', async () => {
-    const response = await fetch(`${currentUrl}/api/remove_song`);
+    const response = await fetch('/api/remove_song');
     const data = await response.json();
     console.log(data);
 })
