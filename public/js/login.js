@@ -15,12 +15,12 @@ document.getElementById("is-registering").addEventListener('click', (event) => {
   const passwordField = document.getElementById("password");
   const submitLogin = document.getElementById("submit-login");
   if (submitLogin.value === "Log In") {
-    document.getElementById(login-form).action = "register";
+    document.getElementById("login-form").action = "register";
     submitLogin.value = "Register";
     passwordField.autocomplete = "new-password";
   }
   else {
-    document.getElementById(login-form).action = "login";
+    document.getElementById("login-form").action = "login";
     submitLogin.value = "Log In";
     passwordField.autocomplete = "current-password";
   }
