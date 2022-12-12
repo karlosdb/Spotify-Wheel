@@ -1,3 +1,7 @@
+.hidden {
+  display: none !important;
+}
+
 body {
   font-family: "Poppins", sans-serif;
   height: 100vh;
@@ -46,7 +50,11 @@ input {
   text-align: center;
   display: inline-block;
   font-size: 13px;
-  margin: 20px 20px 0px 20px !important;
+  margin: 20px 20px 0px 20px;
+}
+
+.register-toggle {
+  margin-top: 1rem !important;
 }
 
 input[type=text], input[type=password] {
@@ -59,7 +67,7 @@ input[type=text], input[type=password] {
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
-  margin: 5px;
+  margin: 20px 20px 0px 20px;
   width: 85%;
   border: 2px solid #f6f6f6;
   border-radius: 5px 5px 5px 5px;
@@ -69,10 +77,14 @@ input[type=text], input[type=password]:placeholder {
   color: #cccccc;
 }
 
+input[type=submit] {
+  margin: 20px 20px 0px 20px;
+}
+
 form i {
   position: absolute;
   right: 70px;
-  bottom: 110px;
+  top: 135px;
   cursor: pointer;
 }
 

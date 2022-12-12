@@ -16,14 +16,17 @@
     <div class="wrapper">
       <h1 class="login-header" > Spotify Wheel </h1>
       <div id="formContent">
-        <form action="dashboard" method="GET">
-          <input type="text" id="Username" placeholder="Username">
-          
-            <input type="password" autocomplete = "current-password" id="password" placeholder="Password">
-            <span>
-              <i class="bi bi-eye-slash" id="show-password"></i>
-          </span>
+        <form action="dashboard" method="GET" id="login-form">
+          <input type="text" autocomplete="username" id="Username" placeholder="Username">
+          <input type="password" autocomplete = "current-password" id="password" placeholder="Password">
+          <input type="password" autocomplete = "off" class="hidden" id="confirm-password" placeholder="Confirm Password">
+          <i class="bi bi-eye-slash" id="show-password"></i>
           <input type="submit" id="submit-login" value="Log In">
+          <br>
+          <div class="register-toggle">
+            <label for="register-toggle"> Register? </label>
+            <input type="checkbox"name="register-toggle" id="is-registering" value="Register">
+          </div>
         </form>
 
       </div>

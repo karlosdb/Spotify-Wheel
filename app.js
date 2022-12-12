@@ -48,7 +48,7 @@ app.use(session({
   secret: process.env.SECRET || 'SECRET',
   resave: false,
   saveUninitialized: false,
-}))
+}));
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -69,7 +69,6 @@ const client = new MongoClient(uri, {
 
 client.connect().then((db) => {
   db = db.db("db");
-
 
   // *** PASSPORT ***
 
@@ -158,26 +157,6 @@ app.get('/callback', (req, res) => {
     db.collection("users").insertOne({ test: "test" })
       .then((_) => res.json("saved comment"))
       .catch(console.err);
-  });
-
-  app.get("/api/add_song", async (req, res) => {
-    res.json("added song");
-  });
-
-  app.get("/api/remove_song", (req, res) => {
-    db.collection("users").deleteMany({})
-      .then((_) => res.json("removed song"))
-      .catch(console.err);
-  });
-
-  app.get("/api/move_song", (req, res) => {
-    db.collection("users").updateOne({ user: "Kevin" }, { $set: { logins: 3 } })
-      .then((_) => res.json("updated song"))
-      .catch(console.err);
-  });
-
-  app.get("/login=&login=", (req, res) => {
-    res.redirect("/dashboard");
   });
 
 
