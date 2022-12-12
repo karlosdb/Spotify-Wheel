@@ -14,7 +14,8 @@ document.addEventListener('mousedown', function(event) {
     }
   }, false);
 
-document.getElementById('logout-button').addEventListener('click', () => {
+document.getElementById('logout-button').addEventListener('click', (event) => {
+    event.preventDefault();
     window.location.href = '/logout'
 });
 

@@ -130,16 +130,17 @@ client.connect().then((db) => {
   };
 
   const checkLoggedIn = (req, res, next) => {
-    if (req.isAuthenticated()) return res.redirect("/dashboard");
+    if (req.isAuthenticated()) return res.redirect("/spotifyLogin");
     next();
   };
 
-  app.get("/logout", checkLoggedIn, (req, res) => {
+  app.get("/logout", checkAuthenticated, (req, res) => {
     req.logout((err) => {
       if (err) {
         return next(err);
+      } else {
+        res.redirect("/");
       }
-      res.redirect("/");
     });
   });
 
