@@ -15,9 +15,23 @@ async function loadComments() {
   const response = await fetch("/api/get_currently_playing_track_info");
   const data = await response.json();
   document.getElementById("album-img").src = data.imageURL;
-  document.getElementById("song-name").innerHTML = data.name;
-  document.getElementById("album-name").innerHTML = data.album;
-  document.getElementById("artist-name").innerHTML = data.artist;
+  document.getElementById("song-name").innerHTML = `Name: ${data.name}`;
+  document.getElementById("album-name").innerHTML = `Album: ${data.album}`;
+  document.getElementById("artist-name").innerHTML = `Artist: ${data.artist}`;
+
+  const comments = await fetch("/api/get_comments", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify([data.uri]),
+  });
+
+  const commentsData = await comments.json();
+
+  // TODO: LOOP THROUGH COMMENTS AND ADD THEM TO THE PAGE
+  console.log(commentsData);
 }
 
 let currentUrl = window.location.href

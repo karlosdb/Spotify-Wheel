@@ -247,7 +247,7 @@ client.connect().then((db) => {
   });
 
   app.post("/api/get_comments", checkAuthenticated, async (req, res) => {
-    const { song_id } = req.body;
+    const [ song_id ] = req.body;
     res.json(await db.collection("comments").find({ song_id }).toArray());
   });
 
@@ -323,7 +323,7 @@ client.connect().then((db) => {
           return {
             name: data.body.item.name,
             artist: data.body.item.artists[0].name,
-            album: data.body.item.album,
+            album: data.body.item.album.name,
             imageURL: data.body.item.album.images[0].url,
             uri: data.body.item.uri
           };
@@ -335,13 +335,19 @@ client.connect().then((db) => {
     ))
   });
 
-  app.post("/api/get_player_status", async (req, res) => {
-    res.json(await spotifyApi.getMyCurrentPlaybackState().then((data) => {
-      return {"is_playing": (data.body && data.body.is_playing)};
-    }));
+  app.get("/api/get_player_status", (req, res) => {
+    // console.log("getting player status")
+    // res.json(await spotifyApi.getMyCurrentPlaybackState().then((data) => {
+    //   console.log(data.body)
+    //   return {"is_playing": (data.body && data.body.is_playing)};
+    // }));
+
+    spotifyApi.getMyCurrentPlaybackState().then(data => {
+      res.json({is_playing: (data.body && data.body.is_playing)});
+    })
   })
 
-  let port = process.env.PORT;
+  let port = process.env.PORT
 
   if (port == null || port == "") {
     port = 8000;
