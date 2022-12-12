@@ -120,6 +120,14 @@ form i {
   margin-top: 50px;
 }
 
+.list-group{
+  margin-bottom: 10px;
+  overflow:scroll;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  max-height: 92%;
+}
+
 .list-group-item {
   color: black;
   cursor: pointer;
