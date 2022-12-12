@@ -328,6 +328,7 @@ client.connect().then((db) => {
 
   app.get("/api/get_currently_playing_track_info", async (req, res) => {
     res.json(await spotifyApi.getMyCurrentPlayingTrack().then(
+    res.json(await spotifyApi.getMyCurrentPlayingTrack().then(
       function (data) {
         if (data.body.item === undefined) {
           console.log("nothing is playing");
