@@ -30,8 +30,9 @@ APIs:
 We use the "Spotify WebAPI Node" (https://github.com/thelinmichael/spotify-web-api-node) to connect to the user's spotify account. 
 
 DATABASE:
-For our website, we used MongoDB for our database. In our database, we have two collections, users and comments. Users contains username/passwords and 
-comments just contain songs and their comments. 
+For our website, we used MongoDB for our database. In our database, we have two collections, users and comments. Users contains account info and 
+comments just contain songs and their comments. More specifically, the users collection stores documents containing a username, hashed password, and
+a unique salt. The songs collection contains documents containing a song name and a associated list of comments. 
 
 APIs/Routing
 For authentication:
@@ -85,7 +86,12 @@ We will find the document with the user's username, and use our hashing function
 are successfully authenticated, otherwise they will be denied and have to try again to login. This authentication allows them to connect their spotify
 and access their dashboard along with all the playlists and controls. 
 
+Division of labor: 
+Shuby: Authentication and setting up the database
+Kevin: Responsible for frontend/backend interactions and user experience
+Karlos: API connections and connecting it with spotify controls and content. 
 
+Conclusion: 
 
 
 
