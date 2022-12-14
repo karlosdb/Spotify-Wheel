@@ -25,12 +25,15 @@ const getMethods = (obj) => {
 
 let secrets;
 let uri;
+let apiSecret;
 
 if (!process.env.URI) {
   secrets = require("./secrets.json");
   uri = secrets.URI;
+  apiSecret = secrets.SPOTIFYSECRET;
 } else {
   uri = process.env.URI;
+  apiSecret = process.env.SPOTIFYSECRET;
 }
 
 // *** PASSPORT ***
@@ -159,19 +162,9 @@ client.connect().then((db) => {
     });
   });
 
-  let spotifyApi;
-
   // *** SPOTIFY ***
   app.get("/spotifyLogin", (req, res) => {
     //console.log(`${req.protocol}://${req.headers.host}/callback`)
-
-    let apiSecret;
-    if (!process.env.URI) {
-      secrets = require("./secrets.json");
-      apiSecret = secrets.SPOTIFYSECRET;
-    } else {
-      apiSecret = process.env.SPOTIFYSECRET;
-    }
 
     spotifyApi = new SpotifyWebApi({
       clientId: '5bb105cf8e7a4b4dbd81c6db928df2c9',
